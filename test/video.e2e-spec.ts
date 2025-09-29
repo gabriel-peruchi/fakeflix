@@ -110,4 +110,38 @@ describe('Video controller (e2e)', () => {
         })
     })
   })
+
+  describe('/stream/:videoId (GET)', () => {
+    it('should stream a video', async () => {
+      const { body: sampleVideo } = await request(app.getHttpServer())
+        .post('/video')
+        .attach('video', './test/fixtures/sample.mp4')
+        .attach('thumbnail', './test/fixtures/sample.jpg')
+        .field('title', 'Test video')
+        .field('description', 'This is a test video')
+        .expect(HttpStatus.CREATED)
+
+      const videoId = sampleVideo.id
+      const videoSize = 1430145
+      const videoRange = `bytes=0-${videoSize - 1}`
+
+      const response = await request(app.getHttpServer())
+        .get(`/stream/${videoId}`)
+        .set('Range', videoRange)
+        .expect(HttpStatus.PARTIAL_CONTENT)
+
+      expect(response.headers['content-type']).toBe('video/mp4')
+      expect(response.headers['content-length']).toBe(String(videoSize))
+      expect(response.headers['accept-ranges']).toBe('bytes')
+      expect(response.headers['content-range']).toBe(
+        `bytes 0-${videoSize - 1}/${videoSize}`,
+      )
+    })
+
+    it('returns 404 if the video is not found', async () => {
+      await request(app.getHttpServer())
+        .get('/stream/invalid-video-id')
+        .expect(HttpStatus.NOT_FOUND)
+    })
+  })
 })
