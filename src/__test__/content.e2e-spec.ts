@@ -1,11 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppModule } from '@src/app.module'
-import { PrismaService } from '@src/prisma.service'
+import { PrismaService } from '@src/persistence/prisma/prisma.service'
 import * as fs from 'node:fs'
 import request from 'supertest'
 
-describe('Video controller (e2e)', () => {
+describe('ContentController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
   let prismaService: PrismaService
@@ -52,7 +52,7 @@ describe('Video controller (e2e)', () => {
       }
 
       await request(app.getHttpServer())
-        .post('/video')
+        .post('/content/video')
         .attach('video', './test/fixtures/sample.mp4')
         .attach('thumbnail', './test/fixtures/sample.jpg')
         .field('title', video.title)
@@ -77,7 +77,7 @@ describe('Video controller (e2e)', () => {
       }
 
       await request(app.getHttpServer())
-        .post('/video')
+        .post('/content/video')
         .attach('video', './test/fixtures/sample.mp4')
         .field('title', video.title)
         .field('description', video.description)
@@ -96,7 +96,7 @@ describe('Video controller (e2e)', () => {
       }
 
       await request(app.getHttpServer())
-        .post('/video')
+        .post('/content/video')
         .attach('video', './test/fixtures/sample.mp3')
         .attach('thumbnail', './test/fixtures/sample.jpg')
         .field('title', video.title)
@@ -114,7 +114,7 @@ describe('Video controller (e2e)', () => {
   describe('/stream/:videoId (GET)', () => {
     it('should stream a video', async () => {
       const { body: sampleVideo } = await request(app.getHttpServer())
-        .post('/video')
+        .post('/content/video')
         .attach('video', './test/fixtures/sample.mp4')
         .attach('thumbnail', './test/fixtures/sample.jpg')
         .field('title', 'Test video')
@@ -126,7 +126,7 @@ describe('Video controller (e2e)', () => {
       const videoRange = `bytes=0-${videoSize - 1}`
 
       const response = await request(app.getHttpServer())
-        .get(`/stream/${videoId}`)
+        .get(`/content/stream/${videoId}`)
         .set('Range', videoRange)
         .expect(HttpStatus.PARTIAL_CONTENT)
 
@@ -140,7 +140,7 @@ describe('Video controller (e2e)', () => {
 
     it('returns 404 if the video is not found', async () => {
       await request(app.getHttpServer())
-        .get('/stream/invalid-video-id')
+        .get('/content/stream/invalid-video-id')
         .expect(HttpStatus.NOT_FOUND)
     })
   })

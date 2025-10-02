@@ -14,26 +14,21 @@ import {
   UseInterceptors,
   NotFoundException,
 } from '@nestjs/common'
-import { AppService } from './app.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
 import { randomUUID } from 'crypto'
 import path, { extname } from 'path'
-import { PrismaService } from './prisma.service'
 import fs from 'fs'
 import { Request, Response } from 'express'
+import { ContentManagementService } from '../../../core/service/content-management.service'
+import { MediaPlayerService } from '../../../core/service/media-player.service'
 
-@Controller()
-export class AppController {
+@Controller('content')
+export class ContentController {
   constructor(
-    private readonly appService: AppService,
-    private readonly prismaService: PrismaService,
+    private readonly mediaPlayerService: MediaPlayerService,
+    private readonly contentManagementService: ContentManagementService,
   ) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello()
-  }
 
   @Post('video')
   @HttpCode(HttpStatus.CREATED)
@@ -88,18 +83,12 @@ export class AppController {
       throw new BadRequestException('Video and thumbnail are required.')
     }
 
-    return await this.prismaService.video.create({
-      data: {
-        id: randomUUID(),
-        duration: 100,
-        url: videoFile.path,
-        title: contentData.title,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        thumbnailUrl: thumbnailFile.path,
-        description: contentData.description,
-        sizeInKb: videoFile.size, // todo: ta em bytes
-      },
+    return await this.contentManagementService.createContent({
+      url: videoFile.path,
+      title: contentData.title,
+      thumbnailUrl: thumbnailFile.path,
+      description: contentData.description,
+      sizeInKb: videoFile.size, // todo: ta em bytes
     })
   }
 
@@ -110,15 +99,13 @@ export class AppController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<any> {
-    const video = await this.prismaService.video.findUnique({
-      where: { id: videoId },
-    })
+    const videoUrl = await this.mediaPlayerService.prepareStreaming(videoId)
 
-    if (!video) {
+    if (!videoUrl) {
       throw new NotFoundException('Video not found.')
     }
 
-    const videoPath = path.join('.', video.url)
+    const videoPath = path.join('.', videoUrl)
     const videoSize = fs.statSync(videoPath).size
 
     const range = req.headers.range
