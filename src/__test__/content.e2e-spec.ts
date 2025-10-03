@@ -63,9 +63,6 @@ describe('ContentController (e2e)', () => {
             title: video.title,
             description: video.description,
             url: expect.stringContaining('mp4'),
-            thumbnailUrl: expect.stringContaining('jpg'),
-            sizeInKb: video.sizeInKb,
-            duration: video.duration,
           })
         })
     })
