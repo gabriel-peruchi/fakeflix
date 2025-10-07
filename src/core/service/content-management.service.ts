@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { PrismaService } from '@src/persistence/prisma/prisma.service'
-import { randomUUID } from 'node:crypto'
+import { ContentRepository } from '@src/persistence/repository/content.repository'
+import { ContentEntity, ContentType } from '../entity/content.entity'
+import { MovieEntity } from '../entity/movie.entity'
+import { VideoEntity } from '../entity/video.entity'
+import { ThumbnailEntity } from '../entity/thumbnail.entity'
 
 export interface CreateContentData {
   url: string
@@ -12,23 +15,27 @@ export interface CreateContentData {
 
 @Injectable()
 export class ContentManagementService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly contentRepository: ContentRepository) {}
 
   async createContent(data: CreateContentData) {
-    const createdVideo = await this.prismaService.video.create({
-      data: {
-        id: randomUUID(),
-        duration: 100,
-        url: data.url,
-        title: data.title,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        thumbnailUrl: data.thumbnailUrl,
-        description: data.description,
-        sizeInKb: data.sizeInKb,
-      },
+    const content = ContentEntity.createNew({
+      title: data.title,
+      type: ContentType.MOVIE,
+      description: data.description,
+      media: MovieEntity.createNew({
+        video: VideoEntity.createNew({
+          url: data.url,
+          duration: 100,
+          sizeInKb: data.sizeInKb,
+        }),
+        thumbnail: ThumbnailEntity.createNew({
+          url: data.thumbnailUrl,
+        }),
+      }),
     })
 
-    return createdVideo
+    await this.contentRepository.create(content)
+
+    return content
   }
 }
