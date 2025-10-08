@@ -86,10 +86,9 @@ export class ContentRepository {
     T extends Prisma.ContentGetPayload<{
       include: typeof contentInclude
     }>,
-  >(content: T | null): ContentEntity {
-    if (!content || !content.Movie) {
-      //Temporary until I add support to tv shows
-      throw new Error('Movie and video must be present')
+  >(content: T): ContentEntity {
+    if (!content.Movie) {
+      throw new Error('Movie must be present')
     }
 
     const contentEntity = ContentEntity.createFrom({
