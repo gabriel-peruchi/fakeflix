@@ -2,14 +2,14 @@ import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppModule } from '@src/app.module'
 import { ContentManagementService } from '@src/core/service/content-management.service'
-import { PrismaService } from '@src/persistence/prisma/prisma.service'
+import { VideoRepository } from '@src/persistence/repository/video.repository'
 import * as fs from 'node:fs'
 import request from 'supertest'
 
 describe('VideoStreamingController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
-  let prismaService: PrismaService
+  let videoRepository: VideoRepository
   let contentManagementService: ContentManagementService
 
   beforeAll(async () => {
@@ -20,10 +20,10 @@ describe('VideoStreamingController (e2e)', () => {
     app = moduleFixture.createNestApplication()
     await app.init()
 
-    contentManagementService = app.get<ContentManagementService>(
+    contentManagementService = moduleFixture.get<ContentManagementService>(
       ContentManagementService,
     )
-    prismaService = app.get<PrismaService>(PrismaService)
+    videoRepository = moduleFixture.get<VideoRepository>(VideoRepository)
   })
 
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe('VideoStreamingController (e2e)', () => {
   })
 
   afterEach(async () => {
-    await prismaService.video.deleteMany()
+    await videoRepository.deleteAll()
   })
 
   afterAll(async () => {
