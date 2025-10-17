@@ -1,6 +1,8 @@
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppModule } from '@src/app.module'
+import { ContentRepository } from '@src/persistence/repository/content.repository'
+import { MovieRepository } from '@src/persistence/repository/movie.repository'
 import { VideoRepository } from '@src/persistence/repository/video.repository'
 import * as fs from 'node:fs'
 import request from 'supertest'
@@ -9,6 +11,8 @@ describe('ContentController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
   let videoRepository: VideoRepository
+  let movieRepository: MovieRepository
+  let contentRepository: ContentRepository
 
   beforeAll(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -19,6 +23,8 @@ describe('ContentController (e2e)', () => {
     await app.init()
 
     videoRepository = moduleFixture.get<VideoRepository>(VideoRepository)
+    movieRepository = moduleFixture.get<MovieRepository>(MovieRepository)
+    contentRepository = moduleFixture.get<ContentRepository>(ContentRepository)
   })
 
   beforeEach(() => {
@@ -29,6 +35,8 @@ describe('ContentController (e2e)', () => {
 
   afterEach(async () => {
     await videoRepository.deleteAll()
+    await movieRepository.deleteAll()
+    await contentRepository.deleteAll()
   })
 
   afterAll(async () => {

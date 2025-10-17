@@ -2,6 +2,8 @@ import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppModule } from '@src/app.module'
 import { ContentManagementService } from '@src/core/service/content-management.service'
+import { ContentRepository } from '@src/persistence/repository/content.repository'
+import { MovieRepository } from '@src/persistence/repository/movie.repository'
 import { VideoRepository } from '@src/persistence/repository/video.repository'
 import * as fs from 'node:fs'
 import request from 'supertest'
@@ -10,6 +12,8 @@ describe('VideoStreamingController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
   let videoRepository: VideoRepository
+  let movieRepository: MovieRepository
+  let contentRepository: ContentRepository
   let contentManagementService: ContentManagementService
 
   beforeAll(async () => {
@@ -24,6 +28,8 @@ describe('VideoStreamingController (e2e)', () => {
       ContentManagementService,
     )
     videoRepository = moduleFixture.get<VideoRepository>(VideoRepository)
+    movieRepository = moduleFixture.get<MovieRepository>(MovieRepository)
+    contentRepository = moduleFixture.get<ContentRepository>(ContentRepository)
   })
 
   beforeEach(() => {
@@ -34,6 +40,8 @@ describe('VideoStreamingController (e2e)', () => {
 
   afterEach(async () => {
     await videoRepository.deleteAll()
+    await movieRepository.deleteAll()
+    await contentRepository.deleteAll()
   })
 
   afterAll(async () => {
@@ -47,7 +55,7 @@ describe('VideoStreamingController (e2e)', () => {
 
   describe('/stream/:videoId (GET)', () => {
     it('should stream a video', async () => {
-      const createContent = await contentManagementService.createContent({
+      const createContent = await contentManagementService.createMovie({
         title: 'Test Video',
         description: 'This is a test video',
         url: './test/fixtures/sample.mp4',
@@ -55,7 +63,7 @@ describe('VideoStreamingController (e2e)', () => {
         sizeInKb: 1430145,
       })
 
-      const videoId = createContent.getMedia()?.getVideo()?.getId()
+      const videoId = createContent.movie.video.id
       const videoSize = 1430145
       const videoRange = `bytes=0-${videoSize - 1}`
 
