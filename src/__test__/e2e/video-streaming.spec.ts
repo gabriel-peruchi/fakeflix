@@ -5,6 +5,7 @@ import { ContentManagementService } from '@src/core/service/content-management.s
 import { ContentRepository } from '@src/persistence/repository/content.repository'
 import { MovieRepository } from '@src/persistence/repository/movie.repository'
 import { VideoRepository } from '@src/persistence/repository/video.repository'
+import nock from 'nock'
 import * as fs from 'node:fs'
 import request from 'supertest'
 
@@ -42,6 +43,7 @@ describe('VideoStreamingController (e2e)', () => {
     await videoRepository.deleteAll()
     await movieRepository.deleteAll()
     await contentRepository.deleteAll()
+    nock.cleanAll()
   })
 
   afterAll(async () => {
@@ -55,7 +57,30 @@ describe('VideoStreamingController (e2e)', () => {
 
   describe('/stream/:videoId (GET)', () => {
     it('should stream a video', async () => {
-      const createContent = await contentManagementService.createMovie({
+      // nock has support to native fetch only in 14.0.0-beta.6 https://github.com/nock/nock/issues/2397
+      nock('https://api.themoviedb.org/3', {
+        encodedQueryParams: true,
+        reqheaders: {
+          Authorization: (): boolean => true,
+        },
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/search/keyword`)
+        .query({ query: 'Test Video', page: '1' })
+        .reply(200, { results: [{ id: '1' }] })
+
+      nock('https://api.themoviedb.org/3', {
+        encodedQueryParams: true,
+        reqheaders: {
+          Authorization: (): boolean => true,
+        },
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`discover/movie`)
+        .query({ with_keywords: '1' })
+        .reply(200, { results: [{ vote_average: 8.5 }] })
+
+      const createMovie = await contentManagementService.createMovie({
         title: 'Test Video',
         description: 'This is a test video',
         url: './test/fixtures/sample.mp4',
@@ -63,7 +88,7 @@ describe('VideoStreamingController (e2e)', () => {
         sizeInKb: 1430145,
       })
 
-      const videoId = createContent.movie.video.id
+      const videoId = createMovie.movie.video.id
       const videoSize = 1430145
       const videoRange = `bytes=0-${videoSize - 1}`
 

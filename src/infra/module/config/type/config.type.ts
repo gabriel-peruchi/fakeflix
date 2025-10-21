@@ -11,10 +11,16 @@ export const databaseSchema = z.object({
   username: z.string(),
 })
 
+export const movieDbSchema = z.object({
+  apiToken: z.string(),
+  url: z.string().url(),
+})
+
 export const configSchema = z.object({
   env: environmentSchema,
   port: z.coerce.number().positive().int(),
   database: databaseSchema,
+  movieDb: movieDbSchema,
 })
 
 export type Environment = z.infer<typeof environmentSchema>

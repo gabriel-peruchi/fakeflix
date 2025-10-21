@@ -5,6 +5,7 @@ import { ContentType } from '../enum/content-type.enum'
 import { Movie } from '@src/persistence/entity/movie.entity'
 import { Video } from '@src/persistence/entity/video.entity'
 import { Thumbnail } from '@src/persistence/entity/thumbnail.entity'
+import { ExternalMovieRatingClient } from '@src/http/rest/client/external-movie-rating/external-movie-rating.client'
 
 export interface CreateVideoData {
   url: string
@@ -16,14 +17,22 @@ export interface CreateVideoData {
 
 @Injectable()
 export class ContentManagementService {
-  constructor(private readonly contentRepository: ContentRepository) {}
+  constructor(
+    private readonly contentRepository: ContentRepository,
+    private readonly externalMovieRatingClient: ExternalMovieRatingClient,
+  ) {}
 
   async createMovie(data: CreateVideoData): Promise<Content> {
+    const externalRating = await this.externalMovieRatingClient.getRating(
+      data.title,
+    )
+
     const contentEntity = new Content({
       title: data.title,
       description: data.description,
       type: ContentType.MOVIE,
       movie: new Movie({
+        externalRating,
         video: new Video({
           url: data.url,
           duration: 10,

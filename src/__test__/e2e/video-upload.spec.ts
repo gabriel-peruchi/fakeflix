@@ -6,6 +6,7 @@ import { MovieRepository } from '@src/persistence/repository/movie.repository'
 import { VideoRepository } from '@src/persistence/repository/video.repository'
 import * as fs from 'node:fs'
 import request from 'supertest'
+import nock from 'nock'
 
 describe('ContentController (e2e)', () => {
   let moduleFixture: TestingModule
@@ -37,6 +38,7 @@ describe('ContentController (e2e)', () => {
     await videoRepository.deleteAll()
     await movieRepository.deleteAll()
     await contentRepository.deleteAll()
+    nock.cleanAll()
   })
 
   afterAll(async () => {
@@ -50,6 +52,29 @@ describe('ContentController (e2e)', () => {
 
   describe('/video (POST)', () => {
     it('should upload a video', async () => {
+      // nock has support to native fetch only in 14.0.0-beta.6 https://github.com/nock/nock/issues/2397
+      nock('https://api.themoviedb.org/3', {
+        encodedQueryParams: true,
+        reqheaders: {
+          Authorization: (): boolean => true,
+        },
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/search/keyword`)
+        .query({ query: 'Test video', page: '1' })
+        .reply(200, { results: [{ id: '1' }] })
+
+      nock('https://api.themoviedb.org/3', {
+        encodedQueryParams: true,
+        reqheaders: {
+          Authorization: (): boolean => true,
+        },
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`discover/movie`)
+        .query({ with_keywords: '1' })
+        .reply(200, { results: [{ vote_average: 8.5 }] })
+
       const video = {
         title: 'Test video',
         description: 'This is a test video',
