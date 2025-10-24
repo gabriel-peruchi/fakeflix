@@ -1,4 +1,4 @@
-import { ConfigService } from '@contentModule/infra/module/config/service/config.service'
+import { ConfigService } from '@sharedModules/config/service/config.service'
 import { TypeOrmMigrationService } from '@contentModule/infra/module/typeorm/service/typeorm-migration.service'
 import { PersistenceModule } from '@contentModule/persistence/persistence.module'
 import { NestFactory } from '@nestjs/core'

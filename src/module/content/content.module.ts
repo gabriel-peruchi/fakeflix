@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { PersistenceModule } from '@contentModule/persistence/persistence.module'
-import { ConfigModule } from '@contentModule/infra/module/config/config.module'
+import { ConfigModule } from '@sharedModules/config/config.module'
 import { VideoUploadController } from '@contentModule/http/rest/controller/video-upload.controller'
 import { MediaPlayerController } from '@contentModule/http/rest/controller/media-player.controller'
 import { ContentManagementService } from '@contentModule/core/service/content-management.service'
