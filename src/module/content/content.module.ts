@@ -8,10 +8,14 @@ import { MediaPlayerService } from '@contentModule/core/service/media-player.ser
 import { ContentRepository } from '@contentModule/persistence/repository/content.repository'
 import { VideoRepository } from '@contentModule/persistence/repository/video.repository'
 import { ExternalMovieRatingClient } from '@contentModule/http/rest/client/external-movie-rating/external-movie-rating.client'
-import { HttpClient } from '@contentModule/infra/http/client/http.client'
+import { HttpClientModule } from '@sharedModules/http-client/http-client.module'
 
 @Module({
-  imports: [PersistenceModule.forRoot(), ConfigModule.forRoot()],
+  imports: [
+    PersistenceModule.forRoot(),
+    ConfigModule.forRoot(),
+    HttpClientModule,
+  ],
   controllers: [VideoUploadController, MediaPlayerController],
   providers: [
     ContentManagementService,
@@ -19,7 +23,6 @@ import { HttpClient } from '@contentModule/infra/http/client/http.client'
     ContentRepository,
     VideoRepository,
     ExternalMovieRatingClient,
-    HttpClient,
   ],
 })
 export class ContentModule {}
