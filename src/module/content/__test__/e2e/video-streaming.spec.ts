@@ -5,7 +5,7 @@ import { VideoRepository } from '@contentModule/persistence/repository/video.rep
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppModule } from '@src/app.module'
-import nock from 'nock'
+import nock, { cleanAll } from 'nock'
 import * as fs from 'node:fs'
 import request from 'supertest'
 
@@ -43,7 +43,7 @@ describe('VideoStreamingController (e2e)', () => {
     await videoRepository.deleteAll()
     await movieRepository.deleteAll()
     await contentRepository.deleteAll()
-    nock.cleanAll()
+    cleanAll()
   })
 
   afterAll(async () => {
