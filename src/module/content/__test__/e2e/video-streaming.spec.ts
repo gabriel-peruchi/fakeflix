@@ -1,10 +1,11 @@
+import { ContentModule } from '@contentModule/content.module'
 import { ContentManagementService } from '@contentModule/core/service/content-management.service'
 import { ContentRepository } from '@contentModule/persistence/repository/content.repository'
 import { MovieRepository } from '@contentModule/persistence/repository/movie.repository'
 import { VideoRepository } from '@contentModule/persistence/repository/video.repository'
 import { HttpStatus, INestApplication } from '@nestjs/common'
-import { Test, TestingModule } from '@nestjs/testing'
-import { AppModule } from '@src/app.module'
+import { TestingModule } from '@nestjs/testing'
+import { createNestApp } from '@testInfra/test-e2e.setup'
 import nock, { cleanAll } from 'nock'
 import * as fs from 'node:fs'
 import request from 'supertest'
@@ -18,12 +19,9 @@ describe('VideoStreamingController (e2e)', () => {
   let contentManagementService: ContentManagementService
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile()
-
-    app = moduleFixture.createNestApplication()
-    await app.init()
+    const nestTestSetup = await createNestApp([ContentModule])
+    app = nestTestSetup.app
+    moduleFixture = nestTestSetup.module
 
     contentManagementService = moduleFixture.get<ContentManagementService>(
       ContentManagementService,

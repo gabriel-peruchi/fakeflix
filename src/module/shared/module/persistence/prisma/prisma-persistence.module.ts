@@ -7,4 +7,4 @@ import { ConfigModule } from '@sharedModules/config/config.module'
   providers: [PrismaService],
   exports: [PrismaService],
 })
-export class PersistenceModule {}
+export class PrismaPersistenceModule {}

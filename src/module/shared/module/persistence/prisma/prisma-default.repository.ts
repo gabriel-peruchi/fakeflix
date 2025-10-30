@@ -6,7 +6,7 @@ import {
 } from '@sharedLibs/core/exception/storage.exception'
 
 @Injectable()
-export abstract class DefaultPrismaRepository {
+export abstract class PrismaDefaultRepository {
   protected handleAndThrowError(error: unknown): never {
     const errorMessage = this.extractErrorMessage(error)
     if (error instanceof PrismaClientValidationError) {

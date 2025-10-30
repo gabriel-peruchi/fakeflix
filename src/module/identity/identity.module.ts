@@ -8,7 +8,9 @@ import {
   AuthService,
   jwtConstants,
 } from '@identityModule/core/service/authentication.service'
-import { PersistenceModule } from '@sharedModules/persistence/prisma/persistence.module'
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
+import { GraphQLModule } from '@nestjs/graphql'
+import { PrismaPersistenceModule } from '@sharedModules/persistence/prisma/prisma-persistence.module'
 
 @Module({
   imports: [
@@ -16,7 +18,11 @@ import { PersistenceModule } from '@sharedModules/persistence/prisma/persistence
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60m' },
     }),
-    PersistenceModule,
+    PrismaPersistenceModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      autoSchemaFile: true,
+      driver: ApolloDriver,
+    }),
   ],
   providers: [
     AuthService,

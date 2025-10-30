@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
-import { DefaultPrismaRepository } from '@sharedModules/persistence/prisma/default-prisma.repository'
 import { PrismaService } from '@sharedModules/persistence/prisma/prisma.service'
 import { UserModel } from '@identityModule/core/model/user.model'
+import { PrismaDefaultRepository } from '@sharedModules/persistence/prisma/prisma-default.repository'
 
 type QueryableFields = Prisma.$UserPayload['scalars']
 
 @Injectable()
-export class UserRepository extends DefaultPrismaRepository {
+export class UserRepository extends PrismaDefaultRepository {
   private readonly model: PrismaService['user']
 
   constructor(prismaService: PrismaService) {

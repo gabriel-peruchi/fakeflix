@@ -1,12 +1,13 @@
 import { HttpStatus, INestApplication } from '@nestjs/common'
-import { Test, TestingModule } from '@nestjs/testing'
-import { AppModule } from '@src/app.module'
+import { TestingModule } from '@nestjs/testing'
 import * as fs from 'node:fs'
 import request from 'supertest'
 import nock, { cleanAll } from 'nock'
 import { VideoRepository } from '@contentModule/persistence/repository/video.repository'
 import { MovieRepository } from '@contentModule/persistence/repository/movie.repository'
 import { ContentRepository } from '@contentModule/persistence/repository/content.repository'
+import { createNestApp } from '@testInfra/test-e2e.setup'
+import { ContentModule } from '@contentModule/content.module'
 
 describe('ContentController (e2e)', () => {
   let moduleFixture: TestingModule
@@ -16,12 +17,9 @@ describe('ContentController (e2e)', () => {
   let contentRepository: ContentRepository
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile()
-
-    app = moduleFixture.createNestApplication()
-    await app.init()
+    const nestTestSetup = await createNestApp([ContentModule])
+    app = nestTestSetup.app
+    moduleFixture = nestTestSetup.module
 
     videoRepository = moduleFixture.get<VideoRepository>(VideoRepository)
     movieRepository = moduleFixture.get<MovieRepository>(MovieRepository)
