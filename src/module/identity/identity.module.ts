@@ -11,6 +11,9 @@ import {
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
 import { PrismaPersistenceModule } from '@sharedModules/persistence/prisma/prisma-persistence.module'
+import { BillingModule } from '@billingModule/billing.module'
+import { BillingSubscriptionStatusApi } from '@sharedModules/integration/interface/billing-integration.interface'
+import { BillingPublicApiProvider } from '@billingModule/integration/provider/public-api.provider'
 
 @Module({
   imports: [
@@ -23,8 +26,13 @@ import { PrismaPersistenceModule } from '@sharedModules/persistence/prisma/prism
       autoSchemaFile: true,
       driver: ApolloDriver,
     }),
+    BillingModule,
   ],
   providers: [
+    {
+      provide: BillingSubscriptionStatusApi,
+      useExisting: BillingPublicApiProvider,
+    },
     AuthService,
     AuthResolver,
     UserResolver,
