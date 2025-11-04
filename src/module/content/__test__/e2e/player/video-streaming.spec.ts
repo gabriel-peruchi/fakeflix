@@ -1,10 +1,9 @@
 import { ContentModule } from '@contentModule/content.module'
 import { ContentManagementService } from '@contentModule/core/service/content-management.service'
-import { ContentRepository } from '@contentModule/persistence/repository/content.repository'
-import { MovieRepository } from '@contentModule/persistence/repository/movie.repository'
-import { VideoRepository } from '@contentModule/persistence/repository/video.repository'
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
+import { Tables } from '@testInfra/enum/table.enum'
+import { testDbClient } from '@testInfra/knex.database'
 import { createNestApp } from '@testInfra/test-e2e.setup'
 import nock, { cleanAll } from 'nock'
 import * as fs from 'node:fs'
@@ -13,9 +12,6 @@ import request from 'supertest'
 describe('VideoStreamingController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
-  let videoRepository: VideoRepository
-  let movieRepository: MovieRepository
-  let contentRepository: ContentRepository
   let contentManagementService: ContentManagementService
 
   beforeAll(async () => {
@@ -26,9 +22,6 @@ describe('VideoStreamingController (e2e)', () => {
     contentManagementService = moduleFixture.get<ContentManagementService>(
       ContentManagementService,
     )
-    videoRepository = moduleFixture.get<VideoRepository>(VideoRepository)
-    movieRepository = moduleFixture.get<MovieRepository>(MovieRepository)
-    contentRepository = moduleFixture.get<ContentRepository>(ContentRepository)
   })
 
   beforeEach(() => {
@@ -38,9 +31,9 @@ describe('VideoStreamingController (e2e)', () => {
   })
 
   afterEach(async () => {
-    await videoRepository.deleteAll()
-    await movieRepository.deleteAll()
-    await contentRepository.deleteAll()
+    await testDbClient(Tables.Video).del()
+    await testDbClient(Tables.Movie).del()
+    await testDbClient(Tables.Content).del()
     cleanAll()
   })
 

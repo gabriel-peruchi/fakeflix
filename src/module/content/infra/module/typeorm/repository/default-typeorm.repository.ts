@@ -24,15 +24,4 @@ export abstract class DefaultTypeOrmRepository<T extends DefaultEntity<T>> {
       where: { id } as FindOptionsWhere<T>,
     })
   }
-
-  /**
-   * These are test only methods that should not be used in real enviroments.
-   */
-  async deleteAll(): Promise<void> {
-    if (process.env.NODE_ENV !== 'test') {
-      throw new Error('This method can only be used in test environment')
-    }
-    const entities = await this.repository.find()
-    await this.repository.remove(entities)
-  }
 }

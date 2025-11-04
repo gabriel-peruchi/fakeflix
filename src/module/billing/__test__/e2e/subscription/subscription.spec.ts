@@ -3,27 +3,20 @@ import { TestingModule } from '@nestjs/testing'
 import { BillingModule } from '@billingModule/billing.module'
 import { PlanInterval, PlanModel } from '@billingModule/core/model/plan.model'
 import { SubscriptionStatus } from '@billingModule/core/model/subscription.model'
-import { PlanRepository } from '@billingModule/persistence/repository/plan.repository'
-import { SubscriptionRepository } from '@billingModule/persistence/repository/subscription.repository'
 import { randomUUID } from 'crypto'
 import request from 'supertest'
 import { createNestApp } from '@testInfra/test-e2e.setup'
+import { testDbClient } from '@testInfra/knex.database'
+import { Tables } from '@testInfra/enum/table.enum'
 
 describe('Subscription e2e test', () => {
   let app: INestApplication
   let module: TestingModule
-  let planRepository: PlanRepository
-  let subscriptionRepository: SubscriptionRepository
 
   beforeAll(async () => {
     const nestTestSetup = await createNestApp([BillingModule])
     app = nestTestSetup.app
     module = nestTestSetup.module
-
-    planRepository = module.get<PlanRepository>(PlanRepository)
-    subscriptionRepository = module.get<SubscriptionRepository>(
-      SubscriptionRepository,
-    )
   })
 
   beforeEach(async () => {
@@ -33,8 +26,8 @@ describe('Subscription e2e test', () => {
   })
 
   afterEach(async () => {
-    await subscriptionRepository.deleteAll()
-    await planRepository.deleteAll()
+    await testDbClient(Tables.Subscription).del()
+    await testDbClient(Tables.Plan).del()
   })
 
   afterAll(async () => {
@@ -52,7 +45,7 @@ describe('Subscription e2e test', () => {
       interval: PlanInterval.Month,
       trialPeriod: 7,
     })
-    await planRepository.create(plan)
+    await testDbClient(Tables.Plan).insert(plan)
 
     const res = await request(app.getHttpServer())
       .post('/subscription')

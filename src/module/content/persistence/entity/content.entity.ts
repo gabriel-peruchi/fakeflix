@@ -15,14 +15,12 @@ export class Content extends DefaultEntity<Content> {
 
   @Column({
     type: 'varchar',
+    length: 255,
     nullable: false,
   })
   title: string
 
-  @Column({
-    type: 'varchar',
-    nullable: false,
-  })
+  @Column('text')
   description: string
 
   @OneToOne(() => Movie, (movie) => movie.content, {
@@ -33,5 +31,5 @@ export class Content extends DefaultEntity<Content> {
   @OneToOne(() => TvShow, (tvShow) => tvShow.content, {
     cascade: true,
   })
-  tvShow?: TvShow
+  tvShow: TvShow | null
 }

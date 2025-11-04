@@ -3,27 +3,19 @@ import { TestingModule } from '@nestjs/testing'
 import * as fs from 'node:fs'
 import request from 'supertest'
 import nock, { cleanAll } from 'nock'
-import { VideoRepository } from '@contentModule/persistence/repository/video.repository'
-import { MovieRepository } from '@contentModule/persistence/repository/movie.repository'
-import { ContentRepository } from '@contentModule/persistence/repository/content.repository'
 import { createNestApp } from '@testInfra/test-e2e.setup'
 import { ContentModule } from '@contentModule/content.module'
+import { testDbClient } from '@testInfra/knex.database'
+import { Tables } from '@testInfra/enum/table.enum'
 
-describe('ContentController (e2e)', () => {
+describe('AdminMovieController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
-  let videoRepository: VideoRepository
-  let movieRepository: MovieRepository
-  let contentRepository: ContentRepository
 
   beforeAll(async () => {
     const nestTestSetup = await createNestApp([ContentModule])
     app = nestTestSetup.app
     moduleFixture = nestTestSetup.module
-
-    videoRepository = moduleFixture.get<VideoRepository>(VideoRepository)
-    movieRepository = moduleFixture.get<MovieRepository>(MovieRepository)
-    contentRepository = moduleFixture.get<ContentRepository>(ContentRepository)
   })
 
   beforeEach(() => {
@@ -33,9 +25,10 @@ describe('ContentController (e2e)', () => {
   })
 
   afterEach(async () => {
-    await videoRepository.deleteAll()
-    await movieRepository.deleteAll()
-    await contentRepository.deleteAll()
+    await testDbClient(Tables.Video).del()
+    await testDbClient(Tables.Movie).del()
+    await testDbClient(Tables.Thumbnail).del()
+    await testDbClient(Tables.Content).del()
     cleanAll()
   })
 
@@ -48,7 +41,7 @@ describe('ContentController (e2e)', () => {
     })
   })
 
-  describe('/video (POST)', () => {
+  describe('/movie (POST)', () => {
     it('should upload a video', async () => {
       // nock has support to native fetch only in 14.0.0-beta.6 https://github.com/nock/nock/issues/2397
       nock('https://api.themoviedb.org/3', {
@@ -83,7 +76,7 @@ describe('ContentController (e2e)', () => {
       }
 
       await request(app.getHttpServer())
-        .post('/content/video')
+        .post('/admin/movie')
         .attach('video', './test/fixtures/sample.mp4')
         .attach('thumbnail', './test/fixtures/sample.jpg')
         .field('title', video.title)
@@ -105,7 +98,7 @@ describe('ContentController (e2e)', () => {
       }
 
       await request(app.getHttpServer())
-        .post('/content/video')
+        .post('/admin/movie')
         .attach('video', './test/fixtures/sample.mp4')
         .field('title', video.title)
         .field('description', video.description)
@@ -124,7 +117,7 @@ describe('ContentController (e2e)', () => {
       }
 
       await request(app.getHttpServer())
-        .post('/content/video')
+        .post('/admin/movie')
         .attach('video', './test/fixtures/sample.mp3')
         .attach('thumbnail', './test/fixtures/sample.jpg')
         .field('title', video.title)

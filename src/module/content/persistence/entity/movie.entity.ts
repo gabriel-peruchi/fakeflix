@@ -22,5 +22,5 @@ export class Movie extends DefaultEntity<Movie> {
     cascade: true,
   })
   @JoinColumn()
-  thumbnail: Thumbnail
+  thumbnail: Thumbnail | null
 }
