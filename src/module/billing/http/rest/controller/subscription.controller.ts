@@ -1,3 +1,4 @@
+import { UserSubscriptionActiveResponseDto } from './../dto/response/user-subscription-active-response.dto'
 import {
   Body,
   Controller,
@@ -9,8 +10,8 @@ import {
 import { NotFoundDomainException } from '@sharedLibs/core/exception/not-found-domain.exception'
 import { SubscriptionService } from '@billingModule/core/service/subscription.service'
 import { CreateSubscriptionRequestDto } from '@billingModule/http/rest/dto/request/create-subscription.dto'
-import { SubscriptionResponseDto } from '@billingModule/http/rest/dto/response/subscription-response.dto'
 import { plainToInstance } from 'class-transformer'
+import { SubscriptionResponseDto } from '../dto/response/subscription-response.dto'
 
 @Controller('subscription')
 export class SubscriptionController {
@@ -42,15 +43,17 @@ export class SubscriptionController {
     }
   }
 
-  @Get('/user/:userId')
-  async getSubscriptionByUserId(
+  @Get('/user/:userId/active')
+  async isUserSubscriptionActive(
     userId: string,
-  ): Promise<SubscriptionResponseDto> {
-    const subscription =
-      await this.subscriptionService.getSubscriptionByUserId(userId)
+  ): Promise<UserSubscriptionActiveResponseDto> {
+    const isActive =
+      await this.subscriptionService.isUserSubscriptionActive(userId)
 
-    return plainToInstance(SubscriptionResponseDto, subscription, {
-      excludeExtraneousValues: true,
-    })
+    return plainToInstance(
+      UserSubscriptionActiveResponseDto,
+      { isActive },
+      { excludeExtraneousValues: true },
+    )
   }
 }
