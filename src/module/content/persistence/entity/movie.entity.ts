@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm'
 import { Content } from './content.entity'
 import { Video } from './video.entity'
-import { DefaultEntity } from '@contentModule/infra/module/typeorm/entity/default.entity'
+import { DefaultEntity } from '@sharedModules/persistence/typeorm/entity/default.entity'
 import { Thumbnail } from './thumbnail.entity'
 
 @Entity({ name: 'Movie' })

@@ -9,6 +9,10 @@ import { VideoRepository } from '@contentModule/persistence/repository/video.rep
 import { ExternalMovieRatingClient } from '@contentModule/http/rest/client/external-movie-rating/external-movie-rating.client'
 import { HttpClientModule } from '@sharedModules/http-client/http-client.module'
 import { AdminMovieController } from './http/rest/controller/admin-movie.controller'
+import { AdminTvShowController } from './http/rest/controller/admin-tv-show.controller'
+import { AgeRecommendationService } from './core/service/age-recommendation.service'
+import { VideoMetadataService } from './core/service/video-metadata.service'
+import { VideoProfanityFilterService } from './core/service/video-profanity-filter.service'
 
 @Module({
   imports: [
@@ -16,13 +20,20 @@ import { AdminMovieController } from './http/rest/controller/admin-movie.control
     ConfigModule.forRoot(),
     HttpClientModule,
   ],
-  controllers: [AdminMovieController, MediaPlayerController],
+  controllers: [
+    AdminMovieController,
+    MediaPlayerController,
+    AdminTvShowController,
+  ],
   providers: [
     ContentManagementService,
     MediaPlayerService,
     ContentRepository,
     VideoRepository,
     ExternalMovieRatingClient,
+    AgeRecommendationService,
+    VideoMetadataService,
+    VideoProfanityFilterService,
   ],
 })
 export class ContentModule {}

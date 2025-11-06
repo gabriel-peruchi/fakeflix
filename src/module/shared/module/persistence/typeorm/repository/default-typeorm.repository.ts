@@ -1,4 +1,10 @@
-import { DataSource, EntityTarget, FindOptionsWhere, Repository } from 'typeorm'
+import {
+  DataSource,
+  EntityTarget,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm'
 import { DefaultEntity } from '../entity/default.entity'
 
 export abstract class DefaultTypeOrmRepository<T extends DefaultEntity<T>> {
@@ -19,9 +25,26 @@ export abstract class DefaultTypeOrmRepository<T extends DefaultEntity<T>> {
     return await this.repository.save(entity)
   }
 
-  async findOneById(id: string): Promise<T | null> {
+  async findOneById(id: string, relations?: string[]): Promise<T | null> {
     return await this.repository.findOne({
       where: { id } as FindOptionsWhere<T>,
+      relations,
+    })
+  }
+
+  async findOneBy(options: FindOneOptions<T>): Promise<T | null> {
+    return this.repository.findOne(options)
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    return this.repository.exists({
+      where: { id } as FindOptionsWhere<T>,
+    })
+  }
+
+  async existsBy(properties: FindOptionsWhere<T>): Promise<boolean> {
+    return this.repository.exists({
+      where: properties,
     })
   }
 }

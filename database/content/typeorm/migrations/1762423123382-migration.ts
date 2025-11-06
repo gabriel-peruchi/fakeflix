@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class Migration1761645291851 implements MigrationInterface {
-  name = 'Migration1761645291851'
+export class Migration1762423123382 implements MigrationInterface {
+  name = 'Migration1762423123382'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -11,7 +11,7 @@ export class Migration1761645291851 implements MigrationInterface {
       `CREATE TABLE "TvShow" ("id" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "contentId" uuid, "thumbnailId" uuid, CONSTRAINT "REL_b6ac53aff4b7200e4b01ca43a9" UNIQUE ("contentId"), CONSTRAINT "REL_e4e17f7e4fbf10e4bcd61aa8e5" UNIQUE ("thumbnailId"), CONSTRAINT "PK_0ecc486b5a7a0f90f5857634ed9" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
-      `CREATE TABLE "episode" ("id" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "title" character varying NOT NULL, "description" character varying NOT NULL, "season" integer NOT NULL, "number" integer NOT NULL, "tvShowId" uuid, "thumbnailId" uuid, CONSTRAINT "REL_6c57a6d8be1b8001ee31093ee9" UNIQUE ("thumbnailId"), CONSTRAINT "PK_7258b95d6d2bf7f621845a0e143" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "Episode" ("id" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "title" character varying(255) NOT NULL, "description" text NOT NULL, "season" integer NOT NULL, "number" integer NOT NULL, "tvShowId" uuid NOT NULL, "thumbnailId" uuid, CONSTRAINT "REL_7153938ad76137550256fd3b40" UNIQUE ("thumbnailId"), CONSTRAINT "PK_c61e604db606b512a70c676a5f1" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
       `CREATE TABLE "Video" ("id" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "url" character varying NOT NULL, "sizeInKb" integer NOT NULL, "duration" integer NOT NULL, "movieId" uuid, "episodeId" uuid, CONSTRAINT "REL_46efd1060cb7a7c545b06120d1" UNIQUE ("movieId"), CONSTRAINT "REL_ce049b6bf5d3e5aee0f3dbd8dc" UNIQUE ("episodeId"), CONSTRAINT "PK_2a23c3da7a2fc570b1696191b87" PRIMARY KEY ("id"))`,
@@ -23,7 +23,7 @@ export class Migration1761645291851 implements MigrationInterface {
       `CREATE TYPE "public"."Content_type_enum" AS ENUM('MOVIE', 'TV_SHOW')`,
     )
     await queryRunner.query(
-      `CREATE TABLE "Content" ("id" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "type" "public"."Content_type_enum" NOT NULL, "title" character varying NOT NULL, "description" character varying NOT NULL, CONSTRAINT "PK_7cb78a77f6c66cb6ea6f4316a5c" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "Content" ("id" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "type" "public"."Content_type_enum" NOT NULL, "title" character varying(255) NOT NULL, "description" text NOT NULL, "ageRecommendation" integer, CONSTRAINT "PK_7cb78a77f6c66cb6ea6f4316a5c" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
       `ALTER TABLE "TvShow" ADD CONSTRAINT "FK_b6ac53aff4b7200e4b01ca43a9c" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -32,16 +32,16 @@ export class Migration1761645291851 implements MigrationInterface {
       `ALTER TABLE "TvShow" ADD CONSTRAINT "FK_e4e17f7e4fbf10e4bcd61aa8e59" FOREIGN KEY ("thumbnailId") REFERENCES "Thumbnail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
     await queryRunner.query(
-      `ALTER TABLE "episode" ADD CONSTRAINT "FK_bc417590af57a49dc42ce4ba038" FOREIGN KEY ("tvShowId") REFERENCES "TvShow"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "Episode" ADD CONSTRAINT "FK_3dc5f16eddbe518eff23f510ec6" FOREIGN KEY ("tvShowId") REFERENCES "TvShow"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
     await queryRunner.query(
-      `ALTER TABLE "episode" ADD CONSTRAINT "FK_6c57a6d8be1b8001ee31093ee99" FOREIGN KEY ("thumbnailId") REFERENCES "Thumbnail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "Episode" ADD CONSTRAINT "FK_7153938ad76137550256fd3b40a" FOREIGN KEY ("thumbnailId") REFERENCES "Thumbnail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
     await queryRunner.query(
       `ALTER TABLE "Video" ADD CONSTRAINT "FK_46efd1060cb7a7c545b06120d14" FOREIGN KEY ("movieId") REFERENCES "Movie"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
     await queryRunner.query(
-      `ALTER TABLE "Video" ADD CONSTRAINT "FK_ce049b6bf5d3e5aee0f3dbd8dc0" FOREIGN KEY ("episodeId") REFERENCES "episode"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "Video" ADD CONSTRAINT "FK_ce049b6bf5d3e5aee0f3dbd8dc0" FOREIGN KEY ("episodeId") REFERENCES "Episode"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
     await queryRunner.query(
       `ALTER TABLE "Movie" ADD CONSTRAINT "FK_c155b5944bdd1e260a4ae79bc82" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -65,10 +65,10 @@ export class Migration1761645291851 implements MigrationInterface {
       `ALTER TABLE "Video" DROP CONSTRAINT "FK_46efd1060cb7a7c545b06120d14"`,
     )
     await queryRunner.query(
-      `ALTER TABLE "episode" DROP CONSTRAINT "FK_6c57a6d8be1b8001ee31093ee99"`,
+      `ALTER TABLE "Episode" DROP CONSTRAINT "FK_7153938ad76137550256fd3b40a"`,
     )
     await queryRunner.query(
-      `ALTER TABLE "episode" DROP CONSTRAINT "FK_bc417590af57a49dc42ce4ba038"`,
+      `ALTER TABLE "Episode" DROP CONSTRAINT "FK_3dc5f16eddbe518eff23f510ec6"`,
     )
     await queryRunner.query(
       `ALTER TABLE "TvShow" DROP CONSTRAINT "FK_e4e17f7e4fbf10e4bcd61aa8e59"`,
@@ -80,7 +80,7 @@ export class Migration1761645291851 implements MigrationInterface {
     await queryRunner.query(`DROP TYPE "public"."Content_type_enum"`)
     await queryRunner.query(`DROP TABLE "Movie"`)
     await queryRunner.query(`DROP TABLE "Video"`)
-    await queryRunner.query(`DROP TABLE "episode"`)
+    await queryRunner.query(`DROP TABLE "Episode"`)
     await queryRunner.query(`DROP TABLE "TvShow"`)
     await queryRunner.query(`DROP TABLE "Thumbnail"`)
   }

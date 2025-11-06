@@ -18,13 +18,13 @@ import { CreateVideoResponseDto } from '../dto/response/create-video-response.dt
 import { RestResponseInterceptor } from '../interceptor/rest-response.interceptor'
 import { extname } from 'node:path'
 
-@Controller('admin')
+@Controller('admin/movie')
 export class AdminMovieController {
   constructor(
     private readonly contentManagementService: ContentManagementService,
   ) {}
 
-  @Post('movie')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
     FileFieldsInterceptor(
