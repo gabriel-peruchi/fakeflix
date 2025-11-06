@@ -67,11 +67,10 @@ export class AdminTvShowController {
 
     return {
       id: content.id,
-      //TODO fix !
-      tvShowId: content.tvShow!.id,
       title: content.title,
+      tvShowId: content.tvShow.id,
       description: content.description,
-      thumbnailUrl: content.tvShow?.thumbnail?.url,
+      thumbnailUrl: content.tvShow.thumbnail?.url,
     }
   }
 

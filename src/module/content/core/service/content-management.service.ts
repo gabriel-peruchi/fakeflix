@@ -1,5 +1,4 @@
 import { ExternalMovieRatingClient } from '@contentModule/http/rest/client/external-movie-rating/external-movie-rating.client'
-import { Content } from '@contentModule/persistence/entity/content.entity'
 import { Movie } from '@contentModule/persistence/entity/movie.entity'
 import { ContentRepository } from '@contentModule/persistence/repository/content.repository'
 import {
@@ -7,7 +6,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { ContentType } from '../enum/content-type.enum'
 import { Video } from '@contentModule/persistence/entity/video.entity'
 import { Thumbnail } from '@contentModule/persistence/entity/thumbnail.entity'
 import { EpisodeRepository } from '@contentModule/persistence/repository/episode.repository'
@@ -17,6 +15,8 @@ import { AgeRecommendationService } from './age-recommendation.service'
 import { TvShow } from '@contentModule/persistence/entity/tv-show.entity'
 import { CreateEpisodeRequestDto } from '@contentModule/http/rest/dto/request/create-episode-request.dto'
 import { Episode } from '@contentModule/persistence/entity/episode.entity'
+import { MovieContentModel } from '../model/movie-content.model'
+import { TvShowContentModel } from '../model/tv-show-content.model'
 
 export interface CreateVideoData {
   url: string
@@ -37,15 +37,15 @@ export class ContentManagementService {
     private readonly ageRecommendationService: AgeRecommendationService,
   ) {}
 
-  async createMovie(data: CreateVideoData): Promise<Content> {
+  async createMovie(data: CreateVideoData): Promise<MovieContentModel> {
     const externalRating = await this.externalMovieRatingClient.getRating(
       data.title,
     )
 
-    const contentEntity = new Content({
+    const contentEntity = new MovieContentModel({
       title: data.title,
       description: data.description,
-      type: ContentType.MOVIE,
+      ageRecommendation: null,
       movie: new Movie({
         externalRating,
         video: new Video({
@@ -62,9 +62,7 @@ export class ContentManagementService {
       })
     }
 
-    const content = await this.contentRepository.save(contentEntity)
-
-    return content
+    return await this.contentRepository.saveMovie(contentEntity)
   }
 
   async createTvShow(tvShow: {
@@ -72,11 +70,10 @@ export class ContentManagementService {
     title: string
     description: string
     thumbnailUrl?: string
-  }): Promise<Content> {
-    const content = new Content({
+  }): Promise<TvShowContentModel> {
+    const content = new TvShowContentModel({
       title: tvShow.title,
       description: tvShow.description,
-      type: ContentType.TV_SHOW,
       tvShow: new TvShow({}),
     })
 
@@ -86,7 +83,7 @@ export class ContentManagementService {
       })
     }
 
-    return await this.contentRepository.save(content)
+    return await this.contentRepository.saveTvShow(content)
   }
 
   async createEpisode(
@@ -98,9 +95,10 @@ export class ContentManagementService {
   ): Promise<Episode> {
     // Problem: Requires too many repositories
 
-    const content = await this.contentRepository.findOneById(contentId, [
-      'tvShow',
-    ])
+    const content = await this.contentRepository.findTvShowContentById(
+      contentId,
+      ['tvShow'],
+    )
 
     if (!content?.tvShow) {
       throw new NotFoundException(
@@ -162,7 +160,7 @@ export class ContentManagementService {
     content.ageRecommendation = ageRecommendation
 
     // Not transactional
-    await this.contentRepository.save(content)
+    await this.contentRepository.saveTvShow(content)
     await this.episodeRepository.save(episode)
 
     return episode
