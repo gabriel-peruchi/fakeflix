@@ -17,6 +17,7 @@ import { CreateEpisodeRequestDto } from '@contentModule/http/rest/dto/request/cr
 import { Episode } from '@contentModule/persistence/entity/episode.entity'
 import { MovieContentModel } from '../model/movie-content.model'
 import { TvShowContentModel } from '../model/tv-show-content.model'
+import { TransactionManager } from '@contentModule/persistence/transaction.manager'
 
 export interface CreateVideoData {
   url: string
@@ -35,6 +36,7 @@ export class ContentManagementService {
     private readonly videoMetadataService: VideoMetadataService,
     private readonly videoProfanityFilterService: VideoProfanityFilterService,
     private readonly ageRecommendationService: AgeRecommendationService,
+    private readonly transactionManager: TransactionManager,
   ) {}
 
   async createMovie(data: CreateVideoData): Promise<MovieContentModel> {
@@ -159,10 +161,13 @@ export class ContentManagementService {
 
     content.ageRecommendation = ageRecommendation
 
-    // Not transactional
-    await this.contentRepository.saveTvShow(content)
-    await this.episodeRepository.save(episode)
+    return await this.transactionManager.withTransaction(async () => {
+      await this.transactionManager.transactionalContentRepository.saveTvShow(
+        content,
+      )
+      await this.transactionManager.transactionalEpisodeRepository.save(episode)
 
-    return episode
+      return episode
+    })
   }
 }
