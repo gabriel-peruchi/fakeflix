@@ -13,16 +13,14 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
 import { randomUUID } from 'crypto'
 import { Request } from 'express'
-import { ContentManagementService } from '../../../core/service/content-management.service'
 import { CreateVideoResponseDto } from '../dto/response/create-video-response.dto'
 import { RestResponseInterceptor } from '../interceptor/rest-response.interceptor'
 import { extname } from 'node:path'
+import { CreateMovieUseCase } from '@contentModule/core/use-case/create-movie.use-case'
 
 @Controller('admin/movie')
 export class AdminMovieController {
-  constructor(
-    private readonly contentManagementService: ContentManagementService,
-  ) {}
+  constructor(private readonly createMovieUseCase: CreateMovieUseCase) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -96,8 +94,8 @@ export class AdminMovieController {
       )
     }
 
-    const createdMovie = await this.contentManagementService.createMovie({
-      url: videoFile.path,
+    const createdMovie = await this.createMovieUseCase.execute({
+      videoUrl: videoFile.path,
       title: contentData.title,
       thumbnailUrl: thumbnailFile.path,
       description: contentData.description,

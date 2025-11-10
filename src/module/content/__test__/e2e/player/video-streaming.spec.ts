@@ -1,5 +1,5 @@
 import { ContentModule } from '@contentModule/content.module'
-import { ContentManagementService } from '@contentModule/core/service/content-management.service'
+import { CreateMovieUseCase } from '@contentModule/core/use-case/create-movie.use-case'
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
 import { Tables } from '@testInfra/enum/table.enum'
@@ -12,16 +12,15 @@ import request from 'supertest'
 describe('VideoStreamingController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
-  let contentManagementService: ContentManagementService
+  let createMovieUseCase: CreateMovieUseCase
 
   beforeAll(async () => {
     const nestTestSetup = await createNestApp([ContentModule])
     app = nestTestSetup.app
     moduleFixture = nestTestSetup.module
 
-    contentManagementService = moduleFixture.get<ContentManagementService>(
-      ContentManagementService,
-    )
+    createMovieUseCase =
+      moduleFixture.get<CreateMovieUseCase>(CreateMovieUseCase)
   })
 
   beforeEach(() => {
@@ -71,10 +70,10 @@ describe('VideoStreamingController (e2e)', () => {
         .query({ with_keywords: '1' })
         .reply(200, { results: [{ vote_average: 8.5 }] })
 
-      const createMovie = await contentManagementService.createMovie({
+      const createMovie = await createMovieUseCase.execute({
         title: 'Test Video',
         description: 'This is a test video',
-        url: './test/fixtures/sample.mp4',
+        videoUrl: './test/fixtures/sample.mp4',
         thumbnailUrl: './test/fixtures/sample.jpg',
         sizeInKb: 1430145,
       })

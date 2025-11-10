@@ -4,6 +4,8 @@ import { DefaultEntity } from './entity/default.entity'
 import { TypeOrmMigrationService } from './service/typeorm-migration.service'
 import { ConfigService } from '@sharedModules/config/service/config.service'
 import { ConfigModule } from '@sharedModules/config/config.module'
+import { addTransactionalDataSource } from 'typeorm-transactional'
+import { DataSource } from 'typeorm'
 
 @Module({})
 export class TypeOrmPersistenceModule {
@@ -28,6 +30,14 @@ export class TypeOrmPersistenceModule {
               ...configService.get('database'),
               ...options,
             }
+          },
+          // Added to enable transactional entity manager
+          async dataSourceFactory(options) {
+            if (!options) {
+              throw new Error('Invalid options passed')
+            }
+
+            return addTransactionalDataSource(new DataSource(options))
           },
         }),
       ],

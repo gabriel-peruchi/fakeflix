@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator'
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator'
 
 export class CreateEpisodeResponseDto {
   @IsUUID()
@@ -23,5 +29,6 @@ export class CreateEpisodeResponseDto {
 
   @IsNotEmpty()
   @IsNumber()
-  readonly duration: number
+  @IsOptional()
+  readonly duration: number | null
 }

@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common'
-import { VideoNotFoundException } from '../exception/video-not-found.exception'
 import { VideoRepository } from '@contentModule/persistence/repository/video.repository'
+import { Injectable, NotFoundException } from '@nestjs/common'
 
 @Injectable()
-export class MediaPlayerService {
+export class GetStreamingURLUseCase {
   constructor(private readonly videoRepository: VideoRepository) {}
 
-  async prepareStreaming(videoId: string) {
+  async execute(videoId: string): Promise<string> {
     const video = await this.videoRepository.findOneById(videoId)
 
     if (!video) {
-      throw new VideoNotFoundException(`Video with ID ${videoId} not found`)
+      throw new NotFoundException(`video with id ${videoId} not found`)
     }
 
     return video.url

@@ -1,11 +1,12 @@
 import { DefaultTypeOrmRepository } from '@sharedModules/persistence/typeorm/repository/default-typeorm.repository'
 import { Injectable } from '@nestjs/common'
-import { EntityManager } from 'typeorm'
+import { DataSource } from 'typeorm'
 import { Movie } from '../entity/movie.entity'
+import { InjectDataSource } from '@nestjs/typeorm'
 
 @Injectable()
 export class MovieRepository extends DefaultTypeOrmRepository<Movie> {
-  constructor(readonly entityManager: EntityManager) {
-    super(Movie, entityManager)
+  constructor(@InjectDataSource() dataSource: DataSource) {
+    super(Movie, dataSource.manager)
   }
 }

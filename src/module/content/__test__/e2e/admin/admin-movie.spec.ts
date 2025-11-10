@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
-import * as fs from 'node:fs'
+import fs from 'node:fs'
 import request from 'supertest'
 import nock, { cleanAll } from 'nock'
 import { createNestApp } from '@testInfra/test-e2e.setup'
@@ -72,7 +72,7 @@ describe('AdminMovieController (e2e)', () => {
         videoUrl: 'uploads/test.mp4',
         thumbnailUrl: 'uploads/test.jpg',
         sizeInKb: 1430145,
-        duration: 100,
+        duration: null,
       }
 
       await request(app.getHttpServer())
