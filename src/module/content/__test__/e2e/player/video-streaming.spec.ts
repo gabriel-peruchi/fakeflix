@@ -1,6 +1,6 @@
 import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/constants'
+import { videoFactory } from '@contentModule/__test__/factory/video.factory'
 import { ContentModule } from '@contentModule/content.module'
-import { CreateMovieUseCase } from '@contentModule/core/use-case/create-movie.use-case'
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
 import { Tables } from '@testInfra/enum/table.enum'
@@ -13,15 +13,11 @@ import request from 'supertest'
 describe('VideoStreamingController (e2e)', () => {
   let moduleFixture: TestingModule
   let app: INestApplication
-  let createMovieUseCase: CreateMovieUseCase
 
   beforeAll(async () => {
     const nestTestSetup = await createNestApp([ContentModule])
     app = nestTestSetup.app
     moduleFixture = nestTestSetup.module
-
-    createMovieUseCase =
-      moduleFixture.get<CreateMovieUseCase>(CreateMovieUseCase)
   })
 
   beforeEach(() => {
@@ -72,81 +68,12 @@ describe('VideoStreamingController (e2e)', () => {
         .query({ with_keywords: '1' })
         .reply(200, { results: [{ vote_average: 8.5 }] })
 
-      nock('https://generativelanguage.googleapis.com')
-        .post('/v1beta/models/gemini-2.0-flash:generateContent')
-        .query(true) // Match any query parameters
-        .reply(200, {
-          candidates: [
-            {
-              content: {
-                parts: [
-                  {
-                    text: JSON.stringify({
-                      responseText: 'This is a test video summary.',
-                    }),
-                  },
-                ],
-              },
-              finishReason: 'STOP',
-              index: 0,
-            },
-          ],
-        })
-
-      nock('https://generativelanguage.googleapis.com')
-        .post('/v1beta/models/gemini-2.0-flash:generateContent')
-        .query(true) // Match any query parameters
-        .reply(200, {
-          candidates: [
-            {
-              content: {
-                parts: [
-                  {
-                    text: JSON.stringify({
-                      responseText: 'This is a test video transcript.',
-                    }),
-                  },
-                ],
-              },
-              finishReason: 'STOP',
-              index: 0,
-            },
-          ],
-        })
-
-      nock('https://generativelanguage.googleapis.com')
-        .post('/v1beta/models/gemini-2.0-flash:generateContent')
-        .query(true) // Match any query parameters
-        .reply(200, {
-          candidates: [
-            {
-              content: {
-                parts: [
-                  {
-                    text: JSON.stringify({
-                      ageRating: 12,
-                      explanation:
-                        'The video contains mild language and thematic elements appropriate for viewers 12 and above.',
-                      categories: ['language', 'thematic elements'],
-                    }),
-                  },
-                ],
-              },
-              finishReason: 'STOP',
-              index: 0,
-            },
-          ],
-        })
-
-      const createMovie = await createMovieUseCase.execute({
-        title: 'Test Video',
-        description: 'This is a test video',
-        videoUrl: `${CONTENT_TEST_FIXTURES}/sample.mp4`,
-        thumbnailUrl: `${CONTENT_TEST_FIXTURES}/sample.jpg`,
-        sizeInKb: 1430145,
+      const fakeVideo = videoFactory.build({
+        url: `${CONTENT_TEST_FIXTURES}/sample.mp4`,
       })
+      await testDbClient(Tables.Video).insert(fakeVideo)
 
-      const videoId = createMovie.movie.video.id
+      const videoId = fakeVideo.id
       const videoSize = 1430145
       const videoRange = `bytes=0-${videoSize - 1}`
 
