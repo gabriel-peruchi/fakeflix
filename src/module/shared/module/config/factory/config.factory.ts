@@ -17,6 +17,10 @@ export const factory = (): Config => {
       apiToken: process.env.MOVIEDB_API_TOKEN,
       url: process.env.MOVIEDB_BASE_URL,
     },
+    geminiApi: {
+      apiKey: process.env.GEMINI_API_KEY,
+      url: process.env.GEMINI_API_URL,
+    },
   })
 
   if (result.success) {

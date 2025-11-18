@@ -52,7 +52,7 @@ export class CreateMovieUseCase {
     }
 
     Promise.all([
-      await this.videoProcessorService.processMetadataAndSecurity(
+      await this.videoProcessorService.processMetadataAndModeration(
         contentModel.movie.video,
       ),
       await this.ageRecommendationService.setAgeRecommendationForContent(

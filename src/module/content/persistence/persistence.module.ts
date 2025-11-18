@@ -10,6 +10,7 @@ import { MovieRepository } from './repository/movie.repository'
 import { VideoRepository } from './repository/video.repository'
 import { TypeOrmPersistenceModule } from '@sharedModules/persistence/typeorm/typeorm-persistence.module'
 import { EpisodeRepository } from './repository/episode.repository'
+import { VideoMetadata } from './entity/video-metadata.entity'
 
 @Module({})
 export class PersistenceModule {
@@ -21,7 +22,15 @@ export class PersistenceModule {
       imports: [
         TypeOrmPersistenceModule.forRoot({
           migrations,
-          entities: [Content, Movie, Thumbnail, Video, TvShow, Episode],
+          entities: [
+            Content,
+            Movie,
+            Thumbnail,
+            Video,
+            TvShow,
+            Episode,
+            VideoMetadata,
+          ],
         }),
       ],
       providers: [

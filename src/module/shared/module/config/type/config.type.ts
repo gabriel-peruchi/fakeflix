@@ -16,11 +16,17 @@ export const movieDbSchema = z.object({
   url: z.string().url(),
 })
 
+const geminiApiSchema = z.object({
+  apiKey: z.string(),
+  url: z.string(),
+})
+
 export const configSchema = z.object({
   env: environmentSchema,
   port: z.coerce.number().positive().int(),
   database: databaseSchema,
   movieDb: movieDbSchema,
+  geminiApi: geminiApiSchema,
 })
 
 export type Environment = z.infer<typeof environmentSchema>
