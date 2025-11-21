@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
-import { UserManagementService } from '@identityModule/core/service/user-management.service'
 import request from 'supertest'
 import { IdentityModule } from '@identityModule/identity.module'
 import { createNestApp } from '@testInfra/test-e2e.setup'
@@ -8,20 +7,16 @@ import { testDbClient } from '@testInfra/knex.database'
 import { Tables } from '@testInfra/enum/table.enum'
 import { planFactory } from '@testInfra/factory/identity/plan.test-factory'
 import { subscriptionFactory } from '@testInfra/factory/identity/subscription.test-factory'
+import { userFactory } from '@identityModule/__test__/factory/user.factory'
 
 describe('AuthResolver (e2e)', () => {
   let app: INestApplication
-  let userManagementService: UserManagementService
   let module: TestingModule
 
   beforeAll(async () => {
     const nestTestSetup = await createNestApp([IdentityModule])
     app = nestTestSetup.app
     module = nestTestSetup.module
-
-    userManagementService = module.get<UserManagementService>(
-      UserManagementService,
-    )
   })
 
   beforeEach(async () => {
@@ -43,18 +38,18 @@ describe('AuthResolver (e2e)', () => {
         email: 'johndoe@example.com',
         password: 'password123',
       }
-      const createdUser = await userManagementService.create({
+      const user = userFactory.build({
         firstName: 'John',
         lastName: 'Doe',
         email: signInInput.email,
-        password: signInInput.password,
       })
       const plan = planFactory.build()
       const subscription = subscriptionFactory.build({
-        userId: createdUser.id,
+        userId: user.id,
         planId: plan.id,
         status: 'ACTIVE' as any,
       })
+      await testDbClient(Tables.User).insert(user)
       await testDbClient(Tables.Plan).insert(plan)
       await testDbClient(Tables.Subscription).insert(subscription)
 
@@ -110,18 +105,18 @@ describe('AuthResolver (e2e)', () => {
         password: 'password123',
       }
 
-      const createdUser = await userManagementService.create({
+      const user = userFactory.build({
         firstName: 'John',
         lastName: 'Doe',
         email: signInInput.email,
-        password: signInInput.password,
       })
       const plan = planFactory.build()
       const subscription = subscriptionFactory.build({
-        userId: createdUser.id,
+        userId: user.id,
         planId: plan.id,
         status: 'INACTIVE' as any,
       })
+      await testDbClient(Tables.User).insert(user)
       await testDbClient(Tables.Plan).insert(plan)
       await testDbClient(Tables.Subscription).insert(subscription)
 
@@ -153,18 +148,18 @@ describe('AuthResolver (e2e)', () => {
         email: 'johndoe@example.com',
         password: 'password123',
       }
-      const createdUser = await userManagementService.create({
+      const user = userFactory.build({
         firstName: 'John',
         lastName: 'Doe',
         email: signInInput.email,
-        password: signInInput.password,
       })
       const plan = planFactory.build()
       const subscription = subscriptionFactory.build({
-        userId: createdUser.id,
+        userId: user.id,
         planId: plan.id,
         status: 'ACTIVE' as any,
       })
+      await testDbClient(Tables.User).insert(user)
       await testDbClient(Tables.Plan).insert(plan)
       await testDbClient(Tables.Subscription).insert(subscription)
 
