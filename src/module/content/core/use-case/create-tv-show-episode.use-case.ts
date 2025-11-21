@@ -67,14 +67,19 @@ export class CreateTvShowEpisodeUseCase {
 
     episode.video = video
 
-    return await runInTransaction(async () => {
-      await this.contentRepository.saveTvShow(content)
-      const savedEpisode = await this.episodeRepository.save(episode)
+    return await runInTransaction(
+      async () => {
+        await this.contentRepository.saveTvShow(content)
+        const savedEpisode = await this.episodeRepository.save(episode)
 
-      // If it fails the transaction is rolled back
-      await this.contentDistributionService.distributeContent(content.id)
+        // If it fails the transaction is rolled back
+        await this.contentDistributionService.distributeContent(content.id)
 
-      return savedEpisode
-    })
+        return savedEpisode
+      },
+      {
+        connectionName: 'content',
+      },
+    )
   }
 }

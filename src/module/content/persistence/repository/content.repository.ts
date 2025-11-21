@@ -9,7 +9,7 @@ import { InjectDataSource } from '@nestjs/typeorm'
 // TODO: It is recommended to implement two different repositories, MovieContentRepository and TvShowContentRepository.
 @Injectable()
 export class ContentRepository extends DefaultTypeOrmRepository<Content> {
-  constructor(@InjectDataSource() dataSource: DataSource) {
+  constructor(@InjectDataSource('content') dataSource: DataSource) {
     super(Content, dataSource.manager)
   }
 

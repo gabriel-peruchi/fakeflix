@@ -1,13 +1,14 @@
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
 import { BillingModule } from '@billingModule/billing.module'
-import { PlanInterval, PlanModel } from '@billingModule/core/model/plan.model'
-import { SubscriptionStatus } from '@billingModule/core/model/subscription.model'
 import { randomUUID } from 'crypto'
 import request from 'supertest'
 import { createNestApp } from '@testInfra/test-e2e.setup'
 import { testDbClient } from '@testInfra/knex.database'
 import { Tables } from '@testInfra/enum/table.enum'
+import { planFactory } from '@testInfra/factory/identity/plan.test-factory'
+import { PlanInterval } from '@billingModule/core/enum/plan-interval.enum'
+import { SubscriptionStatus } from '@billingModule/core/enum/subscription-status.enum'
 
 describe('Subscription e2e test', () => {
   let app: INestApplication
@@ -37,12 +38,12 @@ describe('Subscription e2e test', () => {
   })
 
   it('creates a subscription', async () => {
-    const plan = PlanModel.create({
+    const plan = planFactory.build({
       name: 'Basic',
       description: 'Basic montly plan',
       currency: 'USD',
-      amount: '10',
-      interval: PlanInterval.Month,
+      amount: 10,
+      interval: PlanInterval.MONTH,
       trialPeriod: 7,
     })
     await testDbClient(Tables.Plan).insert(plan)
@@ -57,10 +58,11 @@ describe('Subscription e2e test', () => {
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
       deletedAt: null,
-      userId: 'user-id',
+      userId: 'fake-user-id',
       planId: plan.id,
-      status: SubscriptionStatus.Active,
+      status: SubscriptionStatus.ACTIVE,
       startDate: expect.any(String),
+      endDate: null,
       autoRenew: true,
     })
   })

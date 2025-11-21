@@ -10,10 +10,10 @@ import {
 } from '@identityModule/core/service/authentication.service'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { GraphQLModule } from '@nestjs/graphql'
-import { PrismaPersistenceModule } from '@sharedModules/persistence/prisma/prisma-persistence.module'
 import { BillingModule } from '@billingModule/billing.module'
 import { BillingSubscriptionStatusApi } from '@sharedModules/integration/interface/billing-integration.interface'
 import { BillingPublicApiProvider } from '@billingModule/integration/provider/public-api.provider'
+import { PersistenceModule } from './persistence/persistence.module'
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { BillingPublicApiProvider } from '@billingModule/integration/provider/pu
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60m' },
     }),
-    PrismaPersistenceModule,
+    PersistenceModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: true,
       driver: ApolloDriver,

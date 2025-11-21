@@ -22,11 +22,7 @@ import { VideoRecommendationAdapter } from './adpater/video-recommendation.adpat
 import { GeminiTextExtractorClient } from './http/rest/client/gemini/gemini-text-extractor.client'
 
 @Module({
-  imports: [
-    PersistenceModule.forRoot(),
-    ConfigModule.forRoot(),
-    HttpClientModule,
-  ],
+  imports: [PersistenceModule, ConfigModule.forRoot(), HttpClientModule],
   controllers: [
     AdminMovieController,
     MediaPlayerController,

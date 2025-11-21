@@ -6,7 +6,7 @@ import { InjectDataSource } from '@nestjs/typeorm'
 
 @Injectable()
 export class MovieRepository extends DefaultTypeOrmRepository<Movie> {
-  constructor(@InjectDataSource() dataSource: DataSource) {
+  constructor(@InjectDataSource('content') dataSource: DataSource) {
     super(Movie, dataSource.manager)
   }
 }

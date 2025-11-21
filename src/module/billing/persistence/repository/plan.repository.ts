@@ -1,24 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common'
-import { DrizzleDefaultRepository } from '@sharedModules/persistence/drizzle/drizzle-default.repository'
-import { PlanModel } from '@billingModule/core/model/plan.model'
-import * as schema from '@billingModule/persistence/database.schema'
-import { plansTable } from '@billingModule/persistence/database.schema'
-import { InferSelectModel } from 'drizzle-orm'
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+import { Plan } from '@billingModule/persistence/entity/plan.entity'
+import { Injectable } from '@nestjs/common'
+import { InjectDataSource } from '@nestjs/typeorm'
+import { DefaultTypeOrmRepository } from '@sharedModules/persistence/typeorm/repository/default-typeorm.repository'
+import { DataSource } from 'typeorm'
 
 @Injectable()
-export class PlanRepository extends DrizzleDefaultRepository<
-  PlanModel,
-  typeof plansTable
-> {
-  constructor(
-    @Inject('DB_POSTGRES')
-    protected readonly db: PostgresJsDatabase<typeof schema>,
-  ) {
-    super(db, plansTable)
-  }
-
-  protected mapToModel(data: InferSelectModel<typeof plansTable>): PlanModel {
-    return PlanModel.createFrom(data)
+export class PlanRepository extends DefaultTypeOrmRepository<Plan> {
+  constructor(@InjectDataSource('billing') dataSource: DataSource) {
+    super(Plan, dataSource.manager)
   }
 }

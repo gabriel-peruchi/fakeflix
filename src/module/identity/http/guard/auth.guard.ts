@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { JwtService } from '@nestjs/jwt'
-import { UserModel } from '@identityModule/core/model/user.model'
 import { jwtConstants } from '@identityModule/core/service/authentication.service'
 import { UserManagementService } from '@identityModule/core/service/user-management.service'
 import { Request } from 'express'
+import { User } from '../graphql/type/user.type'
 
 export interface AuthenticatedRequest extends Request {
-  user: UserModel
+  user: User
 }
 
 @Injectable()

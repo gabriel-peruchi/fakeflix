@@ -27,10 +27,9 @@ export class SubscriptionController {
           createSubscriptionRequest,
         )
 
-      //TODO validate
       return plainToInstance(
         SubscriptionResponseDto,
-        { ...createdSubscription, ...{ plan: createdSubscription.Plan } },
+        { ...createdSubscription, ...{ plan: createdSubscription.plan } },
         { excludeExtraneousValues: true },
       )
     } catch (error: any) {
@@ -38,7 +37,6 @@ export class SubscriptionController {
         throw new NotFoundException(error.message)
       }
 
-      console.error('Error creating subscription', error)
       throw new InternalServerErrorException()
     }
   }

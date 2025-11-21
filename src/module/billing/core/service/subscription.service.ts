@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { NotFoundDomainException } from '@sharedLibs/core/exception/not-found-domain.exception'
-import {
-  SubscriptionModel,
-  SubscriptionStatus,
-} from '@billingModule/core/model/subscription.model'
 import { PlanRepository } from '@billingModule/persistence/repository/plan.repository'
 import { SubscriptionRepository } from '@billingModule/persistence/repository/subscription.repository'
+import { Subscription } from '@billingModule/persistence/entity/subscription.entity'
+import { SubscriptionStatus } from '../enum/subscription-status.enum'
 
 @Injectable()
 export class SubscriptionService {
@@ -18,29 +16,33 @@ export class SubscriptionService {
     planId,
   }: {
     planId: string
-  }): Promise<SubscriptionModel> {
-    const plan = await this.planRepository.findById(planId)
+  }): Promise<Subscription> {
+    const plan = await this.planRepository.findOneById(planId)
 
     if (!plan) {
       throw new NotFoundDomainException(`Plan with id ${planId} not found`)
     }
 
-    const subscription = SubscriptionModel.create({
-      planId,
-      //TODO replace with user id from the JWT
-      userId: 'user-id',
-      status: SubscriptionStatus.Active,
+    const subscription = new Subscription({
+      plan,
+      userId: 'fake-user-id', // Replace with actual user ID
+      status: SubscriptionStatus.ACTIVE,
       startDate: new Date(),
       autoRenew: true,
     })
 
-    await this.subscriptionRepository.create(subscription)
+    await this.subscriptionRepository.save(subscription)
 
     return subscription
   }
 
   async isUserSubscriptionActive(userId: string): Promise<boolean> {
-    const subscription = await this.subscriptionRepository.findByUserId(userId)
-    return subscription?.status === SubscriptionStatus.Active
+    const subscription =
+      await this.subscriptionRepository.findOneByUserId(userId)
+    return subscription?.status === SubscriptionStatus.ACTIVE
+  }
+
+  async getSubscriptionByUserId(userId: string): Promise<Subscription | null> {
+    return this.subscriptionRepository.findOneByUserId(userId)
   }
 }

@@ -16,12 +16,12 @@ describe('UserResolver (e2e)', () => {
     module = nestTestSetup.module
   })
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await testDbClient(Tables.User).del()
   })
 
   afterAll(async () => {
-    await testDbClient(Tables.User).del()
+    await app.close()
     await module.close()
   })
 

@@ -6,7 +6,7 @@ import { InjectDataSource } from '@nestjs/typeorm'
 
 @Injectable()
 export class EpisodeRepository extends DefaultTypeOrmRepository<Episode> {
-  constructor(@InjectDataSource() dataSource: DataSource) {
+  constructor(@InjectDataSource('content') dataSource: DataSource) {
     super(Episode, dataSource.manager)
   }
 
