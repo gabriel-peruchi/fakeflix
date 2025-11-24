@@ -1,6 +1,5 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { UserUnauthorizedException } from '@identityModule/core/exception/user-unauthorized.exception'
 import { UserRepository } from '@identityModule/persistence/repository/user.repository'
 import { compare } from 'bcrypt'
 import { BillingSubscriptionStatusApi } from '@sharedModules/integration/interface/billing-integration.interface'
@@ -34,7 +33,7 @@ export class AuthService {
       await this.subscriptionServiceClient.isUserSubscriptionActive(user.id)
 
     if (!isSubscriptionActive) {
-      throw new UserUnauthorizedException(
+      throw new UnauthorizedException(
         `User subscription is not active: ${email}`,
       )
     }

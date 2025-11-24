@@ -9,7 +9,7 @@ export const subscriptionFactory = Factory.Sync.makeFactory<
   id: faker.string.uuid(),
   userId: faker.string.uuid(),
   planId: faker.string.uuid(),
-  status: SubscriptionStatus.Active,
+  status: SubscriptionStatus.ACTIVE,
   startDate: faker.date.recent(),
   endDate: null,
   autoRenew: true,
