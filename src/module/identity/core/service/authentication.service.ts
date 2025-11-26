@@ -4,12 +4,6 @@ import { UserRepository } from '@identityModule/persistence/repository/user.repo
 import { compare } from 'bcrypt'
 import { BillingSubscriptionStatusApi } from '@sharedModules/integration/interface/billing-integration.interface'
 
-// TODO: move this to a .env file and config
-export const jwtConstants = {
-  secret:
-    'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
-}
-
 @Injectable()
 export class AuthService {
   constructor(

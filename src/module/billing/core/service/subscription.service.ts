@@ -3,10 +3,12 @@ import { PlanRepository } from '@billingModule/persistence/repository/plan.repos
 import { SubscriptionRepository } from '@billingModule/persistence/repository/subscription.repository'
 import { Subscription } from '@billingModule/persistence/entity/subscription.entity'
 import { SubscriptionStatus } from '../enum/subscription-status.enum'
+import { ClsService } from 'nestjs-cls'
 
 @Injectable()
 export class SubscriptionService {
   constructor(
+    private clsService: ClsService,
     private readonly planRepository: PlanRepository,
     private readonly subscriptionRepository: SubscriptionRepository,
   ) {}
@@ -22,9 +24,11 @@ export class SubscriptionService {
       throw new NotFoundException(`Plan with id ${planId} not found`)
     }
 
+    const userId = this.clsService.get('userId')
+
     const subscription = new Subscription({
       plan,
-      userId: 'fake-user-id', // Replace with actual user ID
+      userId: userId,
       status: SubscriptionStatus.ACTIVE,
       startDate: new Date(),
       autoRenew: true,

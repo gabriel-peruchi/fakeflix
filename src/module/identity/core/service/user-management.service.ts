@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { UserRepository } from '@identityModule/persistence/repository/user.repository'
 import { hash } from 'bcrypt'
 import { User } from '@identityModule/persistence/entity/user.entity'
@@ -29,6 +29,12 @@ export class UserManagementService {
   }
 
   async getUserById(id: string) {
-    return this.userRepository.findOneById(id)
+    const user = await this.userRepository.findOneById(id)
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
   }
 }

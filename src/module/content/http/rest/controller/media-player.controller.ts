@@ -7,10 +7,12 @@ import {
   Param,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common'
 import path from 'path'
 import fs from 'fs'
 import { Request, Response } from 'express'
+import { AuthGuard } from '@sharedModules/auth/guard/auth.guard'
 
 @Controller('stream')
 export class MediaPlayerController {
@@ -19,6 +21,7 @@ export class MediaPlayerController {
   ) {}
 
   @Get(':videoId')
+  @UseGuards(AuthGuard)
   @Header('Content-Type', 'video/mp4')
   async streamVideo(
     @Param('videoId') videoId: string,

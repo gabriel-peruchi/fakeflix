@@ -1,16 +1,17 @@
-import { UseGuards } from '@nestjs/common'
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UserManagementService } from '@identityModule/core/service/user-management.service'
-import {
-  AuthGuard,
-  AuthenticatedRequest,
-} from '@identityModule/http/guard/auth.guard'
+import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { AuthGuard } from '@sharedModules/auth/guard/auth.guard'
+import { ClsService } from 'nestjs-cls'
 import { CreateUserInput } from './type/create-user-input.type'
 import { User } from './type/user.type'
 
 @Resolver()
 export class UserResolver {
-  constructor(private readonly userManagementService: UserManagementService) {}
+  constructor(
+    private readonly userManagementService: UserManagementService,
+    private readonly clsService: ClsService,
+  ) {}
 
   @Mutation(() => User)
   async createUser(
@@ -22,10 +23,8 @@ export class UserResolver {
 
   @Query(() => User)
   @UseGuards(AuthGuard)
-  async getProfile(
-    @Context('req')
-    req: AuthenticatedRequest,
-  ): Promise<User> {
-    return req.user
+  async getProfile(): Promise<User> {
+    const userId = this.clsService.get('userId')
+    return await this.userManagementService.getUserById(userId)
   }
 }

@@ -9,6 +9,15 @@ import { createNestApp } from '@testInfra/test-e2e.setup'
 import nock, { cleanAll } from 'nock'
 import * as fs from 'node:fs'
 import request from 'supertest'
+import { faker } from '@faker-js/faker'
+
+// tradeoff: mock dependency on another dependency
+const fakeUserId = faker.string.uuid()
+jest.mock('jsonwebtoken', () => ({
+  verify: (_token: string, _secret: string, _options: any, callback: any) => {
+    callback(null, { sub: fakeUserId })
+  },
+}))
 
 describe('VideoStreamingController (e2e)', () => {
   let moduleFixture: TestingModule
@@ -79,6 +88,7 @@ describe('VideoStreamingController (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/stream/${videoId}`)
+        .set('Authorization', `Bearer fake-token`)
         .set('Range', videoRange)
         .expect(HttpStatus.PARTIAL_CONTENT)
 
@@ -93,6 +103,7 @@ describe('VideoStreamingController (e2e)', () => {
     it('returns 404 if the video is not found', async () => {
       await request(app.getHttpServer())
         .get('/content/stream/invalid-video-id')
+        .set('Authorization', `Bearer fake-token`)
         .expect(HttpStatus.NOT_FOUND)
     })
   })

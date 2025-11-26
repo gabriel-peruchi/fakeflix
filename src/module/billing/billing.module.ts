@@ -3,9 +3,10 @@ import { SubscriptionService } from '@billingModule/core/service/subscription.se
 import { SubscriptionController } from '@billingModule/http/rest/controller/subscription.controller'
 import { PersistenceModule } from '@billingModule/persistence/persistence.module'
 import { BillingPublicApiProvider } from './integration/provider/public-api.provider'
+import { AuthModule } from '@sharedModules/auth/auth.module'
 
 @Module({
-  imports: [PersistenceModule],
+  imports: [PersistenceModule, AuthModule],
   providers: [SubscriptionService, BillingPublicApiProvider],
   controllers: [SubscriptionController],
   exports: [BillingPublicApiProvider],

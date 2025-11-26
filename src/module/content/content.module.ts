@@ -20,9 +20,15 @@ import { VideoSummaryAdapter } from './adpater/video-summary.adapter.interface'
 import { VideoTranscriptAdapter } from './adpater/video-transcript.adapater.interface'
 import { VideoRecommendationAdapter } from './adpater/video-recommendation.adpater.interface'
 import { GeminiTextExtractorClient } from './http/rest/client/gemini/gemini-text-extractor.client'
+import { AuthModule } from '@sharedModules/auth/auth.module'
 
 @Module({
-  imports: [PersistenceModule, ConfigModule.forRoot(), HttpClientModule],
+  imports: [
+    PersistenceModule,
+    ConfigModule.forRoot(),
+    HttpClientModule,
+    AuthModule,
+  ],
   controllers: [
     AdminMovieController,
     MediaPlayerController,
