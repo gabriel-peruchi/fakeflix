@@ -1,9 +1,9 @@
 import {
   AgeRecommendationSchema,
   VideoRecommendationAdapter,
-} from '@contentModule/adpater/video-recommendation.adpater.interface'
-import { VideoSummaryAdapter } from '@contentModule/adpater/video-summary.adapter.interface'
-import { VideoTranscriptAdapter } from '@contentModule/adpater/video-transcript.adapater.interface'
+} from '@contentModule/core/adapter/video-recommendation.adapter.interface'
+import { VideoSummaryAdapter } from '@contentModule/core/adapter/video-summary.adapter.interface'
+import { VideoTranscriptAdapter } from '@contentModule/core/adapter/video-transcript.adapter.interface'
 import { GoogleGenAI, Type } from '@google/genai'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@sharedModules/config/service/config.service'

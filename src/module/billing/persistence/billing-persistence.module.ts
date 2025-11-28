@@ -20,4 +20,4 @@ import { TypeOrmPersistenceModule } from '@sharedModules/persistence/typeorm/typ
   providers: [PlanRepository, SubscriptionRepository],
   exports: [PlanRepository, SubscriptionRepository],
 })
-export class PersistenceModule {}
+export class BillingPersistenceModule {}

@@ -7,7 +7,7 @@ import { createNestApp } from '@testInfra/test-e2e.setup'
 import { ContentModule } from '@contentModule/content.module'
 import { testDbClient } from '@testInfra/knex.database'
 import { Tables } from '@testInfra/enum/table.enum'
-import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/constants'
+import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/test.constant'
 
 describe('AdminMovieController (e2e)', () => {
   let moduleFixture: TestingModule

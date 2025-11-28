@@ -1,4 +1,4 @@
-import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/constants'
+import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/test.constant'
 import { videoFactory } from '@contentModule/__test__/factory/video.factory'
 import { ContentModule } from '@contentModule/content.module'
 import { HttpStatus, INestApplication } from '@nestjs/common'

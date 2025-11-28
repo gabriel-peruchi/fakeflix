@@ -5,8 +5,8 @@ import { IdentityModule } from '@identityModule/identity.module'
 import { createNestApp } from '@testInfra/test-e2e.setup'
 import { testDbClient } from '@testInfra/knex.database'
 import { Tables } from '@testInfra/enum/table.enum'
-import { planFactory } from '@testInfra/factory/identity/plan.test-factory'
-import { subscriptionFactory } from '@testInfra/factory/identity/subscription.test-factory'
+import { planFactory } from '@testInfra/factory/plan.factory'
+import { subscriptionFactory } from '@testInfra/factory/subscription.factory'
 import { userFactory } from '@identityModule/__test__/factory/user.factory'
 
 describe('AuthResolver (e2e)', () => {

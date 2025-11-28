@@ -19,4 +19,4 @@ import { TypeOrmPersistenceModule } from '@sharedModules/persistence/typeorm/typ
   providers: [UserRepository],
   exports: [UserRepository],
 })
-export class PersistenceModule {}
+export class IdentityPersistenceModule {}

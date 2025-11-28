@@ -7,7 +7,7 @@ import { Tables } from '@testInfra/enum/table.enum'
 import { ContentModule } from '@contentModule/content.module'
 import fs from 'node:fs'
 import nock, { cleanAll } from 'nock'
-import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/constants'
+import { CONTENT_TEST_FIXTURES } from '@contentModule/__test__/test.constant'
 import { contentFactory } from '@contentModule/__test__/factory/content.factory'
 import { tvShowFactory } from '@contentModule/__test__/factory/tv-show.factory'
 

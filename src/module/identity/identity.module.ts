@@ -9,12 +9,12 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { BillingModule } from '@billingModule/billing.module'
 import { BillingSubscriptionStatusApi } from '@sharedModules/integration/interface/billing-integration.interface'
 import { BillingPublicApiProvider } from '@billingModule/integration/provider/public-api.provider'
-import { PersistenceModule } from './persistence/persistence.module'
+import { IdentityPersistenceModule } from './persistence/identity-persistence.module'
 import { AuthModule } from '@sharedModules/auth/auth.module'
 
 @Module({
   imports: [
-    PersistenceModule,
+    IdentityPersistenceModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       autoSchemaFile: true,
       driver: ApolloDriver,

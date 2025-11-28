@@ -43,4 +43,4 @@ import { MovieRepository } from './repository/movie.repository'
     MovieRepository,
   ],
 })
-export class PersistenceModule {}
+export class ContentPersistenceModule {}
