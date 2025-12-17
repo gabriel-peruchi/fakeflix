@@ -9,6 +9,7 @@ import { TypeOrmPersistenceModule } from '@sharedModules/persistence/typeorm/typ
 import { DataSource } from 'typeorm'
 import { addTransactionalDataSource } from 'typeorm-transactional'
 import { MovieRepository } from './repository/movie.repository'
+import { VideoMetadataRepository } from './repository/video-metadata.repository'
 
 @Module({
   imports: [
@@ -35,12 +36,14 @@ import { MovieRepository } from './repository/movie.repository'
     EpisodeRepository,
     VideoRepository,
     MovieRepository,
+    VideoMetadataRepository,
   ],
   exports: [
     ContentRepository,
     EpisodeRepository,
     VideoRepository,
     MovieRepository,
+    VideoMetadataRepository,
   ],
 })
 export class ContentPersistenceModule {}

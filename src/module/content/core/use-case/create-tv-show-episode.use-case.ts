@@ -58,28 +58,22 @@ export class CreateTvShowEpisodeUseCase {
       sizeInKb: episodeData.videoSizeInKb,
     })
 
-    Promise.all([
-      await this.videoProcessorService.processMetadataAndModeration(video),
-      await this.ageRecommendationService.setAgeRecommendationForContent(
-        content,
-      ),
-    ])
-
     episode.video = video
 
-    return await runInTransaction(
+    await runInTransaction(
       async () => {
         await this.contentRepository.saveTvShow(content)
         const savedEpisode = await this.episodeRepository.save(episode)
-
-        // If it fails the transaction is rolled back
-        await this.contentDistributionService.distributeContent(content.id)
-
         return savedEpisode
       },
       {
         connectionName: 'content',
       },
     )
+
+    await this.videoProcessorService.processMetadataAndModeration(video)
+    await this.contentDistributionService.distributeContent(content.id)
+
+    return episode
   }
 }

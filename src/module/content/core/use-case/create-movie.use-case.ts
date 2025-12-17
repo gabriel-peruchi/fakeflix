@@ -1,5 +1,4 @@
 import { MovieContentModel } from '@contentModule/core/model/movie-content.model'
-import { AgeRecommendationService } from '@contentModule/core/service/age-recommendation.service'
 import { VideoProcessorService } from '@contentModule/core/service/video-processor.service'
 import { ExternalMovieRatingClient } from '@contentModule/http/client/external-movie-rating/external-movie-rating.client'
 import { Movie } from '@contentModule/persistence/entity/movie.entity'
@@ -18,7 +17,6 @@ export class CreateMovieUseCase {
     private readonly contentRepository: ContentRepository,
     private readonly videoProcessorService: VideoProcessorService,
     private readonly externalMovieRatingClient: ExternalMovieRatingClient,
-    private readonly ageRecommendationService: AgeRecommendationService,
   ) {}
 
   async execute(video: {
@@ -51,16 +49,11 @@ export class CreateMovieUseCase {
       })
     }
 
-    Promise.all([
-      await this.videoProcessorService.processMetadataAndModeration(
-        contentModel.movie.video,
-      ),
-      await this.ageRecommendationService.setAgeRecommendationForContent(
-        contentModel,
-      ),
-    ])
-
     const content = await this.contentRepository.saveMovie(contentModel)
+
+    await this.videoProcessorService.processMetadataAndModeration(
+      contentModel.movie.video,
+    )
 
     return content
   }

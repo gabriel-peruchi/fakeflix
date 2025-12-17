@@ -21,12 +21,18 @@ const geminiApiSchema = z.object({
   url: z.string(),
 })
 
+const redisSchema = z.object({
+  host: z.string(),
+  port: z.coerce.number(),
+})
+
 export const configSchema = z.object({
   env: environmentSchema,
   port: z.coerce.number().positive().int(),
   database: databaseSchema,
   movieDb: movieDbSchema,
   geminiApi: geminiApiSchema,
+  redis: redisSchema,
 })
 
 export type Environment = z.infer<typeof environmentSchema>

@@ -35,8 +35,8 @@ export class TvShowContentModel {
       type: ContentType.TV_SHOW, //encapsulates the creation
       ageRecommendation: data.ageRecommendation || null,
       releaseDate: data.releaseDate || null,
-      createdAt: data.createdAt || Date.now(),
-      updatedAt: data.updatedAt || Date.now(),
+      createdAt: data.createdAt || new Date(),
+      updatedAt: data.updatedAt || new Date(),
       deletedAt: data.deletedAt,
       tvShow: data.tvShow,
     })
