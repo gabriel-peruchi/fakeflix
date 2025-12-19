@@ -10,6 +10,8 @@ import nock, { cleanAll } from 'nock'
 import * as fs from 'node:fs'
 import request from 'supertest'
 import { faker } from '@faker-js/faker'
+import { contentFactory } from '@contentModule/__test__/factory/content.factory'
+import { movieFactory } from '@contentModule/__test__/factory/movie.factory'
 
 // tradeoff: mock dependency on another dependency
 const fakeUserId = faker.string.uuid()
@@ -77,12 +79,18 @@ describe('VideoStreamingController (e2e)', () => {
         .query({ with_keywords: '1' })
         .reply(200, { results: [{ vote_average: 8.5 }] })
 
-      const fakeVideo = videoFactory.build({
+      const content = contentFactory.build()
+      const movie = movieFactory.build({ contentId: content.id })
+      const video = videoFactory.build({
+        movieId: movie.id,
         url: `${CONTENT_TEST_FIXTURES}/sample.mp4`,
       })
-      await testDbClient(Tables.Video).insert(fakeVideo)
 
-      const videoId = fakeVideo.id
+      await testDbClient(Tables.Content).insert(content)
+      await testDbClient(Tables.Movie).insert(movie)
+      await testDbClient(Tables.Video).insert(video)
+
+      const videoId = video.id
       const videoSize = 1430145
       const videoRange = `bytes=0-${videoSize - 1}`
 
