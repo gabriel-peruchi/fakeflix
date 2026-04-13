@@ -2,7 +2,7 @@
 
 ## Core Rules (Full details: docs/architecture-guidelines.md)
 
-**You MUST read `docs/architecture-guidelines.md` when:**
+**You MUST read `docs/architecture-guidelines.md` and `docs/modular-architecture-guidelines.md` when:**
 - Creating or modifying module structure
 - Questions about architectural patterns
 - Naming conventions for services/entities/DTOs
