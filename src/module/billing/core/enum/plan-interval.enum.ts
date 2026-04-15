@@ -1,6 +1,6 @@
 export enum PlanInterval {
-  DAY = 'DAY',
-  WEEK = 'WEEK',
-  MONTH = 'MONTH',
-  YEAR = 'YEAR',
+  Day = 'Day',
+  Week = 'Week',
+  Month = 'Month',
+  Year = 'Year',
 }

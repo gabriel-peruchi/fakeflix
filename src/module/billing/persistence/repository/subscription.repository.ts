@@ -11,7 +11,7 @@ export class SubscriptionRepository extends DefaultTypeOrmRepository<Subscriptio
   }
 
   async findOneByUserId(userId: string): Promise<Subscription | null> {
-    return this.findOneBy({
+    return this.findOne({
       where: {
         userId,
       },

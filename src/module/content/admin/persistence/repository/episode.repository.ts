@@ -14,7 +14,7 @@ export class EpisodeRepository extends DefaultTypeOrmRepository<Episode> {
     tvShowId: string,
     season: number,
   ): Promise<Episode | null> {
-    return this.findOneBy({
+    return this.findOne({
       where: {
         tvShowId,
         season,

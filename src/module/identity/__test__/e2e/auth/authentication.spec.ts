@@ -1,13 +1,12 @@
 import { INestApplication } from '@nestjs/common'
 import { TestingModule } from '@nestjs/testing'
-import request from 'supertest'
 import { IdentityModule } from '@identityModule/identity.module'
 import { createNestApp } from '@testInfra/test-e2e.setup'
 import { testDbClient } from '@testInfra/knex.database'
 import { Tables } from '@testInfra/enum/table.enum'
-import { planFactory } from '@testInfra/factory/plan.factory'
-import { subscriptionFactory } from '@testInfra/factory/subscription.factory'
 import { userFactory } from '@identityModule/__test__/factory/user.factory'
+import nock from 'nock'
+import request from 'supertest'
 
 describe('AuthResolver (e2e)', () => {
   let app: INestApplication
@@ -43,15 +42,15 @@ describe('AuthResolver (e2e)', () => {
         lastName: 'Doe',
         email: signInInput.email,
       })
-      const plan = planFactory.build()
-      const subscription = subscriptionFactory.build({
-        userId: user.id,
-        planId: plan.id,
-        status: 'ACTIVE' as any,
-      })
       await testDbClient(Tables.User).insert(user)
-      await testDbClient(Tables.Plan).insert(plan)
-      await testDbClient(Tables.Subscription).insert(subscription)
+      nock('https://localhost:3000', {
+        encodedQueryParams: true,
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/subscription/user/${user.id}/active`)
+        .reply(200, {
+          isActive: true,
+        })
 
       const response = await request(app.getHttpServer())
         .post('/graphql')
@@ -110,15 +109,18 @@ describe('AuthResolver (e2e)', () => {
         lastName: 'Doe',
         email: signInInput.email,
       })
-      const plan = planFactory.build()
-      const subscription = subscriptionFactory.build({
-        userId: user.id,
-        planId: plan.id,
-        status: 'INACTIVE' as any,
-      })
       await testDbClient(Tables.User).insert(user)
-      await testDbClient(Tables.Plan).insert(plan)
-      await testDbClient(Tables.Subscription).insert(subscription)
+      nock('https://localhost:3000', {
+        encodedQueryParams: true,
+        reqheaders: {
+          Authorization: (): boolean => true,
+        },
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/subscription/user/${user.id}/active`)
+        .reply(200, {
+          isActive: false,
+        })
 
       const response = await request(app.getHttpServer())
         .post('/graphql')
@@ -153,15 +155,18 @@ describe('AuthResolver (e2e)', () => {
         lastName: 'Doe',
         email: signInInput.email,
       })
-      const plan = planFactory.build()
-      const subscription = subscriptionFactory.build({
-        userId: user.id,
-        planId: plan.id,
-        status: 'ACTIVE' as any,
-      })
       await testDbClient(Tables.User).insert(user)
-      await testDbClient(Tables.Plan).insert(plan)
-      await testDbClient(Tables.Subscription).insert(subscription)
+      nock('https://localhost:3000', {
+        encodedQueryParams: true,
+        reqheaders: {
+          Authorization: (): boolean => true,
+        },
+      })
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/subscription/user/${user.id}/active`)
+        .reply(200, {
+          isActive: true,
+        })
 
       const acessTokenResponse = await request(app.getHttpServer())
         .post('/graphql')

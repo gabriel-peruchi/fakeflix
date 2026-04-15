@@ -6,7 +6,7 @@ import request from 'supertest'
 import { createNestApp } from '@testInfra/test-e2e.setup'
 import { testDbClient } from '@testInfra/knex.database'
 import { Tables } from '@testInfra/enum/table.enum'
-import { planFactory } from '@testInfra/factory/plan.factory'
+import { planFactory } from '@billingModule/__test__/factory/plan.factory'
 import { PlanInterval } from '@billingModule/core/enum/plan-interval.enum'
 import { SubscriptionStatus } from '@billingModule/core/enum/subscription-status.enum'
 import { faker } from '@faker-js/faker'
@@ -70,7 +70,7 @@ describe('Subscription e2e test', () => {
       deletedAt: null,
       userId: expect.any(String),
       planId: plan.id,
-      status: SubscriptionStatus.ACTIVE,
+      status: SubscriptionStatus.Active,
       startDate: expect.any(String),
       endDate: null,
       autoRenew: true,

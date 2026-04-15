@@ -131,7 +131,7 @@ core/
 export class SubscriptionService {
   async isActive(subscriptionId: string): Promise<boolean> {
     const subscription = await this.repository.findById(subscriptionId);
-    return subscription.status === SubscriptionStatus.ACTIVE;
+    return subscription.status === SubscriptionStatus.Active;
   }
 }
 
@@ -543,7 +543,7 @@ export class SubscriptionService {
   
   async isActive(id: string): Promise<boolean> {
     const subscription = await this.repository.findById(id);
-    return subscription.status === SubscriptionStatus.ACTIVE;
+    return subscription.status === SubscriptionStatus.Active;
   }
 }
 ```
@@ -622,7 +622,7 @@ export class SubscriptionService {
      ) {}
      
      async findById(id: string): Promise<PaymentEntity | null> {
-       return this.repository.findOneBy({ id });
+       return this.repository.findOne({ id });
      }
    }
    ```

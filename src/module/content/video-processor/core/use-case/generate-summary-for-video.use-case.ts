@@ -28,7 +28,7 @@ export class GenerateSummaryForVideoUseCase {
       videoId: video.id,
     })
 
-    const metadata = await this.videoMetadataRepository.findOneBy({
+    const metadata = await this.videoMetadataRepository.findOne({
       where: { video },
     })
 

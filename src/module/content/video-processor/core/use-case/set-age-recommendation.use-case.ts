@@ -54,7 +54,7 @@ export class SetAgeRecommendationUseCase {
     video: Video,
     ageRecommendation: AgeRecommendationSchema,
   ): Promise<VideoMetadata> {
-    const metadata = await this.videoMetadataRepository.findOneBy({
+    const metadata = await this.videoMetadataRepository.findOne({
       where: { video },
     })
 

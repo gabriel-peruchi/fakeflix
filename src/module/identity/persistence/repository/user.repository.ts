@@ -11,7 +11,7 @@ export class UserRepository extends DefaultTypeOrmRepository<User> {
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.findOneBy({
+    return this.findOne({
       where: {
         email,
       },

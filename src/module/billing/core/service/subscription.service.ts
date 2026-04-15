@@ -29,7 +29,7 @@ export class SubscriptionService {
     const subscription = new Subscription({
       plan,
       userId: userId,
-      status: SubscriptionStatus.ACTIVE,
+      status: SubscriptionStatus.Active,
       startDate: new Date(),
       autoRenew: true,
     })
@@ -42,7 +42,7 @@ export class SubscriptionService {
   async isUserSubscriptionActive(userId: string): Promise<boolean> {
     const subscription =
       await this.subscriptionRepository.findOneByUserId(userId)
-    return subscription?.status === SubscriptionStatus.ACTIVE
+    return subscription?.status === SubscriptionStatus.Active
   }
 
   async getSubscriptionByUserId(userId: string): Promise<Subscription | null> {
