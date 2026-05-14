@@ -1,6 +1,6 @@
+import { SubscriptionAddOn } from '@billingModule/subscription/persistence/entity/subscription-add-on.entity'
 import { faker } from '@faker-js/faker'
 import * as Factory from 'factory.ts'
-import { SubscriptionAddOn } from '@billingModule/persistence/entity/subscription-add-on.entity'
 
 export const subscriptionAddOnFactory = Factory.Sync.makeFactory<
   Partial<SubscriptionAddOn>

@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
 
-import { SubscriptionStatus } from '@billingModule/core/enum/subscription-status.enum'
-import { Subscription } from '@billingModule/persistence/entity/subscription.entity'
+import { SubscriptionStatus } from '@billingModule/subscription/core/enum/subscription-status.enum'
 import * as Factory from 'factory.ts'
 import { planFactory } from '@billingModule/__test__/factory/plan.factory'
+import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 export const subscriptionFactory = Factory.Sync.makeFactory<
   Partial<Subscription>
