@@ -17,6 +17,7 @@ import { RemoveAddOnRequestDto } from '@billingModule/subscription/http/rest/dto
 import { ChangePlanResponseDto } from '@billingModule/subscription/http/rest/dto/response/change-plan-response.dto'
 import { SubscriptionAddOnResponseDto } from '@billingModule/subscription/http/rest/dto/response/add-on-response.dto'
 import { RemoveAddOnResponseDto } from '@billingModule/subscription/http/rest/dto/response/remove-add-on-response.dto'
+import { ClsService } from 'nestjs-cls'
 
 @Controller('subscription')
 @UseGuards(AuthGuard)
@@ -24,6 +25,7 @@ export class SubscriptionBillingController {
   constructor(
     private readonly subscriptionBillingService: SubscriptionBillingService,
     private readonly addOnManagerService: AddOnManagerService,
+    private readonly clsService: ClsService,
   ) {}
 
   @Post(':id/change-plan')
@@ -32,8 +34,8 @@ export class SubscriptionBillingController {
     @Param('id') subscriptionId: string,
     @Body() dto: ChangePlanRequestDto,
   ): Promise<ChangePlanResponseDto> {
-    // TODO: Get userId from request context/auth token
-    const userId = dto.userId || 'current-user-id'
+    // Get userId from request context (set by AuthGuard)
+    const userId = dto.userId || this.clsService.get<string>('userId')
 
     const result = await this.subscriptionBillingService.changePlanForUser(
       userId,

@@ -1,9 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common'
 import { Transactional } from 'typeorm-transactional'
 import { AppLogger } from '@sharedModules/logger/service/app-logger.service'
+import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
 import { Plan } from '@billingModule/subscription/persistence/entity/plan.entity'
 import { Invoice } from '@billingModule/invoice/persistence/entity/invoice.entity'
 import { InvoiceLineItem } from '@billingModule/invoice/persistence/entity/invoice-line-item.entity'
+import { SubscriptionAddOn } from '@billingModule/subscription/persistence/entity/subscription-add-on.entity'
 import { SubscriptionRepository } from '@billingModule/subscription/persistence/repository/subscription.repository'
 import { PlanRepository } from '@billingModule/subscription/persistence/repository/plan.repository'
 import { ProrationCalculatorService } from '@billingModule/subscription/core/service/proration-calculator.service'
@@ -17,8 +19,6 @@ import { ChargeType } from '@billingModule/shared/core/enum/charge-type.enum'
 import { SubscriptionStatus } from '@billingModule/subscription/core/enum/subscription-status.enum'
 import { TaxProvider } from '@billingModule/tax/core/enum/tax-provider.enum'
 import { TaxConfiguration } from '@billingModule/tax/core/interface/tax-calculation.interface'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
-import { SubscriptionAddOn } from '@billingModule/subscription/persistence/entity/subscription-add-on.entity'
 
 /**
  * SUBSCRIPTION BILLING SERVICE
@@ -135,9 +135,25 @@ export class SubscriptionBillingService {
       )
 
     // Step 4: Migrate add-ons
+    // If allowedAddOns is null, it means all add-ons are allowed
+    // So we pass all current add-on IDs to keep them all
+    // If it's an array (empty or with IDs), use it directly
+    const subscriptionAddOns = subscription.addOns || []
+    // Ensure allowedAddOns is always an array
+    let allowedAddOnIds: string[]
+    if (newPlan.allowedAddOns === null || newPlan.allowedAddOns === undefined) {
+      // null/undefined means all add-ons are allowed, so pass all current add-on IDs
+      allowedAddOnIds = subscriptionAddOns.map((ao) => ao.addOnId)
+    } else if (Array.isArray(newPlan.allowedAddOns)) {
+      // It's already an array, use it directly
+      allowedAddOnIds = newPlan.allowedAddOns
+    } else {
+      // Fallback to empty array if somehow it's not an array
+      allowedAddOnIds = []
+    }
     const addOnChanges = await this.addOnManagerService.migrateAddOns(
-      subscription.addOns,
-      newPlan.allowedAddOns || [],
+      subscriptionAddOns,
+      allowedAddOnIds,
       effectiveDate,
     )
 
@@ -369,9 +385,25 @@ export class SubscriptionBillingService {
       )
 
     // Step 4: Migrate add-ons
+    // If allowedAddOns is null, it means all add-ons are allowed
+    // So we pass all current add-on IDs to keep them all
+    // If it's an array (empty or with IDs), use it directly
+    const subscriptionAddOns = subscription.addOns || []
+    // Ensure allowedAddOns is always an array
+    let allowedAddOnIds: string[]
+    if (newPlan.allowedAddOns === null || newPlan.allowedAddOns === undefined) {
+      // null/undefined means all add-ons are allowed, so pass all current add-on IDs
+      allowedAddOnIds = subscriptionAddOns.map((ao) => ao.addOnId)
+    } else if (Array.isArray(newPlan.allowedAddOns)) {
+      // It's already an array, use it directly
+      allowedAddOnIds = newPlan.allowedAddOns
+    } else {
+      // Fallback to empty array if somehow it's not an array
+      allowedAddOnIds = []
+    }
     const addOnChanges = await this.addOnManagerService.migrateAddOns(
-      subscription.addOns,
-      newPlan.allowedAddOns || [],
+      subscriptionAddOns,
+      allowedAddOnIds,
       effectiveDate,
     )
 

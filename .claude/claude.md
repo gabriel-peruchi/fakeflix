@@ -15,7 +15,7 @@
 - Organizing code within a Domain Module (billing/, content/, identity/)
 - Adding services, entities, or controllers to existing features
 
-**Key Feature Folders Rules (RFC-08):**
+**Key Feature Folders Rules:**
 - Feature Folders are JUST FOLDERS, not NestJS modules
 - ONE NestJS module per Domain Module (e.g., `billing.module.ts`)
 - DO NOT create `subscription.module.ts`, `invoice.module.ts`, etc.
