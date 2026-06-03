@@ -452,6 +452,49 @@ billing/
             └── tax-calculator.service.ts   ✅ Used by multiple features
 ```
 
+**4. Cohesive Infrastructure Components (Vertical Slice in shared/)**
+
+When a technical infrastructure has multiple related files (entity, repository, adapter, processor), group them as a **vertical slice within shared/** instead of scattering across technical layers:
+
+```
+// ❌ WRONG: Scattered across technical layers (low cohesion)
+billing/shared/
+├── core/
+│   └── adapter/
+│       └── event-bus.adapter.interface.ts   ❌ Scattered
+└── persistence/
+    ├── entity/
+    │   └── outbox-event.entity.ts           ❌ Scattered
+    └── repository/
+        └── outbox.repository.ts             ❌ Scattered
+
+// ✅ CORRECT: Grouped as vertical slice (high cohesion)
+billing/shared/
+├── outbox/                                  ✅ Cohesive infrastructure
+│   ├── adapter/
+│   │   └── event-bus.adapter.interface.ts
+│   ├── entity/
+│   │   └── outbox-event.entity.ts
+│   ├── repository/
+│   │   └── outbox.repository.ts
+│   └── processor/                           ← Future: easy to extend
+│       └── outbox-processor.service.ts
+└── persistence/
+    ├── billing-persistence.module.ts        ✅ TypeORM config stays here
+    └── typeorm-datasource.factory.ts
+```
+
+**Why vertical slice in shared/?**
+- **High cohesion**: All Domain Events code in one place
+- **Easy navigation**: "Where is outbox code?" → `shared/outbox/`
+- **Extensible**: Adding processor, consumer, etc. is natural
+- **Same principle as features**: Vertical slice applies to infrastructure too
+
+**When to use this pattern?**
+- Infrastructure component has ≥3 related files
+- Files work together as a cohesive unit
+- Component will likely grow (more files in the future)
+
 ### ❌ DO NOT use `shared/` for:
 
 **1. Feature-Specific Entities**
@@ -993,6 +1036,7 @@ feature-name/
 - ✅ Used by ≥3 features
 - ✅ Technical infrastructure (persistence module, datasource)
 - ✅ Cross-cutting technical services (tax calculator)
+- ✅ Cohesive infra with ≥3 files → group as vertical slice (e.g., `shared/outbox/`)
 - ❌ Feature-specific business logic
 - ❌ Feature-specific entities (they have owners!)
 
@@ -1008,9 +1052,57 @@ feature-name/
 | Request DTO  | `*-request.dto.ts`           |
 | Response DTO | `*-response.dto.ts`          |
 
+### Test File Location
+
+**Princípio**: Testes devem ficar **perto da unidade de código** que testam.
+
+#### ✅ CORRETO: Testes próximos ao código
+
+```
+subscription/
+├── core/
+│   └── service/
+│       ├── subscription.service.ts
+│       └── __test__/
+│           └── subscription.service.spec.ts    ✅ Próximo ao código
+
+shared/
+└── domain/
+    └── value-object/
+        ├── billing-period.ts
+        └── __test__/
+            └── billing-period.spec.ts          ✅ Próximo ao código
+```
+
+#### ❌ ERRADO: Testes separados em estrutura paralela
+
+```
+subscription/
+├── core/
+│   └── service/
+│       └── subscription.service.ts
+└── __test__/
+    └── unit/
+        └── subscription.service.spec.ts       ❌ Longe do código
+
+shared/
+├── domain/
+│   └── value-object/
+│       └── billing-period.ts
+└── __test__/
+    └── unit/
+        └── domain/
+            └── billing-period.spec.ts         ❌ Longe do código
+```
+
+**Regra geral**:
+- Testes unitários: `{feature}/core/{layer}/__test__/{file}.spec.ts`
+- Testes e2e: `{feature}/__test__/e2e/{feature}.spec.ts`
+- Value Objects/Domain: `{path}/__test__/{file}.spec.ts` (mesmo nível)
+
 ---
 
-## Why NOT Feature Modules?
+## Why NOT Feature Modules? (RFC-08 Decision)
 
 ### Justificativa Contextual
 
@@ -1077,6 +1169,7 @@ Considere **Feature Modules** se no futuro:
 
 - [ARCHITECTURE-GUIDELINES.md](./ARCHITECTURE-GUIDELINES.md) - Overall architecture principles
 - [MODULAR-ARCHITECTURE-GUIDELINES.md](./MODULAR-ARCHITECTURE-GUIDELINES.md) - Module boundaries and communication
+- [RFC-08: Feature Folders](../rfc-feature-folders.md) - Original RFC with full decision rationale
 
 ### Integration with Existing Patterns
 
@@ -1088,3 +1181,7 @@ Feature Folders **complement** our existing patterns:
 - ✅ Keep Public API Provider pattern for inter-module communication
 
 The only change is **where** files are located, not **how** they work.
+
+---
+
+**Last Updated**: Based on billing/, content/, identity/ modules analysis and RFC-08 decision.
