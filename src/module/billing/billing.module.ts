@@ -57,6 +57,7 @@ import { EasyTaxClient } from '@billingModule/tax/http/client/easytax-api/easyta
 import { TaxRateRepository } from '@billingModule/tax/persistence/repository/tax-rate.repository'
 import { TaxCalculationErrorRepository } from '@billingModule/tax/persistence/repository/tax-calculation-error.repository'
 import { TaxCalculationSummaryRepository } from '@billingModule/tax/persistence/repository/tax-calculation-summary.repository'
+import { SubscriptionMapper } from './subscription/persistence/mapper/subscription.mapper'
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { TaxCalculationSummaryRepository } from '@billingModule/tax/persistence/
     SubscriptionRepository,
     SubscriptionAddOnRepository,
     SubscriptionDiscountRepository,
+    SubscriptionMapper,
 
     // Invoice
     InvoiceService,

@@ -3,7 +3,7 @@ import { PlanRepository } from '@billingModule/subscription/persistence/reposito
 import { SubscriptionRepository } from '@billingModule/subscription/persistence/repository/subscription.repository'
 import { SubscriptionStatus } from '../enum/subscription-status.enum'
 import { ClsService } from 'nestjs-cls'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 @Injectable()
 export class SubscriptionService {
@@ -17,7 +17,7 @@ export class SubscriptionService {
     planId,
   }: {
     planId: string
-  }): Promise<Subscription> {
+  }): Promise<SubscriptionEntity> {
     const plan = await this.planRepository.findOneById(planId)
 
     if (!plan) {
@@ -26,7 +26,7 @@ export class SubscriptionService {
 
     const userId = this.clsService.get('userId')
 
-    const subscription = new Subscription({
+    const subscription = new SubscriptionEntity({
       plan,
       userId: userId,
       status: SubscriptionStatus.Active,
@@ -45,7 +45,9 @@ export class SubscriptionService {
     return subscription?.status === SubscriptionStatus.Active
   }
 
-  async getSubscriptionByUserId(userId: string): Promise<Subscription | null> {
+  async getSubscriptionByUserId(
+    userId: string,
+  ): Promise<SubscriptionEntity | null> {
     return this.subscriptionRepository.findOneByUserId(userId)
   }
 }

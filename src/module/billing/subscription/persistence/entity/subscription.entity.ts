@@ -1,7 +1,7 @@
 import { SubscriptionStatus } from '@billingModule/subscription/core/enum/subscription-status.enum'
 import { DefaultEntity } from '@sharedModules/persistence/typeorm/entity/default.entity'
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
-import { SubscriptionAddOn } from './subscription-add-on.entity'
+import { SubscriptionAddOnEntity } from './subscription-add-on.entity'
 import { SubscriptionDiscount } from './subscription-discount.entity'
 import {
   BillingAddress,
@@ -14,7 +14,7 @@ import { DunningAttempt } from '@billingModule/dunning/persistence/entity/dunnin
 import { Invoice } from '@billingModule/invoice/persistence/entity/invoice.entity'
 
 @Entity({ name: 'Subscription' })
-export class Subscription extends DefaultEntity<Subscription> {
+export class SubscriptionEntity extends DefaultEntity<SubscriptionEntity> {
   @Column()
   userId: string
 
@@ -65,10 +65,10 @@ export class Subscription extends DefaultEntity<Subscription> {
   @JoinColumn({ name: 'planId' })
   plan: Plan
 
-  @OneToMany(() => SubscriptionAddOn, (addOn) => addOn.subscription, {
+  @OneToMany(() => SubscriptionAddOnEntity, (addOn) => addOn.subscription, {
     cascade: true,
   })
-  addOns: SubscriptionAddOn[]
+  addOns: SubscriptionAddOnEntity[]
 
   @OneToMany(() => SubscriptionDiscount, (discount) => discount.subscription, {
     cascade: true,

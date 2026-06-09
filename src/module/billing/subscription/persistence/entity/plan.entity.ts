@@ -1,7 +1,7 @@
 import { PlanInterval } from '@billingModule/subscription/core/enum/plan-interval.enum'
 import { DefaultEntity } from '@sharedModules/persistence/typeorm/entity/default.entity'
 import { Column, Entity, OneToMany } from 'typeorm'
-import { Subscription } from './subscription.entity'
+import { SubscriptionEntity } from './subscription.entity'
 import { JsonMetadata } from '@billingModule/shared/core/interface/common.interface'
 
 export class ColumnNumericTransformer {
@@ -53,6 +53,6 @@ export class Plan extends DefaultEntity<Plan> {
   @Column({ type: 'json', nullable: true })
   metadata: JsonMetadata | null
 
-  @OneToMany(() => Subscription, (subscription) => subscription.plan)
-  subscriptions: Subscription[]
+  @OneToMany(() => SubscriptionEntity, (subscription) => subscription.plan)
+  subscriptions: SubscriptionEntity[]
 }

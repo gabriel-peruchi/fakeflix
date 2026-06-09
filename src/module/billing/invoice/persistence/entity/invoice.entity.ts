@@ -4,7 +4,7 @@ import { InvoiceStatus } from '@billingModule/invoice/core/enum/invoice-status.e
 import { InvoiceLineItem } from '@billingModule/invoice/persistence/entity/invoice-line-item.entity'
 import { Charge } from '@billingModule/invoice/persistence/entity/charge.entity'
 import { Payment } from '@billingModule/invoice/persistence/entity/payment.entity'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 export class ColumnNumericTransformer {
   to(data: number): number {
@@ -102,9 +102,9 @@ export class Invoice extends DefaultEntity<Invoice> {
   @Column({ type: 'timestamp', nullable: true })
   paidAt: Date | null
 
-  @ManyToOne(() => Subscription, (subscription) => subscription.invoices)
+  @ManyToOne(() => SubscriptionEntity, (subscription) => subscription.invoices)
   @JoinColumn({ name: 'subscriptionId' })
-  subscription: Subscription
+  subscription: SubscriptionEntity
 
   @OneToMany(() => InvoiceLineItem, (lineItem) => lineItem.invoice, {
     cascade: true,

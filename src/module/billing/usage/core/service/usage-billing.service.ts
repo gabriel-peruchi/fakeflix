@@ -18,7 +18,7 @@ import {
   UsedTier,
 } from '@billingModule/usage/core/interface/usage-calculation.interface'
 import { UsageSummary } from '@billingModule/usage/core/interface/usage-summary.interface'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 /**
  * USAGE BILLING SERVICE
@@ -116,7 +116,7 @@ export class UsageBillingService {
    * @returns Array of usage charges by type
    */
   async calculateUsageCharges(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     periodStart: Date,
     periodEnd: Date,
   ): Promise<UsageCharge[]> {
@@ -404,7 +404,7 @@ export class UsageBillingService {
    * @param usageType - Usage type to check
    */
   private async checkQuotaWarnings(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     usageType: UsageType,
   ): Promise<void> {
     const includedQuota = subscription.plan.includedUsageQuotas?.[usageType]

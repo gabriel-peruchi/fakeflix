@@ -4,7 +4,7 @@ import { ChargeType } from '@billingModule/shared/core/enum/charge-type.enum'
 import { PaymentStatus } from '@billingModule/shared/core/enum/payment-status.enum'
 import { Invoice } from '@billingModule/invoice/persistence/entity/invoice.entity'
 import { JsonMetadata } from '@billingModule/shared/core/interface/common.interface'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 export class ColumnNumericTransformer {
   to(data: number): number {
@@ -68,9 +68,9 @@ export class Charge extends DefaultEntity<Charge> {
   @Column({ type: 'json', nullable: true })
   metadata: JsonMetadata | null
 
-  @ManyToOne(() => Subscription, (subscription) => subscription.charges)
+  @ManyToOne(() => SubscriptionEntity, (subscription) => subscription.charges)
   @JoinColumn({ name: 'subscriptionId' })
-  subscription: Subscription
+  subscription: SubscriptionEntity
 
   @ManyToOne(() => Invoice, (invoice) => invoice.charges, { nullable: true })
   @JoinColumn({ name: 'invoiceId' })

@@ -7,8 +7,8 @@ import { SubscriptionAddOnRepository } from '@billingModule/subscription/persist
 import { SubscriptionRepository } from '@billingModule/subscription/persistence/repository/subscription.repository'
 import { ProrationCalculatorService } from '@billingModule/subscription/core/service/proration-calculator.service'
 import { Decimal } from 'decimal.js'
-import { SubscriptionAddOn } from '@billingModule/subscription/persistence/entity/subscription-add-on.entity'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionAddOnEntity } from '@billingModule/subscription/persistence/entity/subscription-add-on.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 /**
  * ADD-ON MANAGER SERVICE
@@ -54,14 +54,14 @@ export class AddOnManagerService {
    */
   @Transactional({ connectionName: 'billing' })
   async addAddOn(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     addOnId: string,
     options: {
       quantity?: number
       effectiveDate?: Date
     },
   ): Promise<{
-    subscriptionAddOn: SubscriptionAddOn
+    subscriptionAddOn: SubscriptionAddOnEntity
     prorationCharge: number
   }> {
     // Load add-on
@@ -98,7 +98,7 @@ export class AddOnManagerService {
     )
 
     // Create subscription add-on
-    const subscriptionAddOn = new SubscriptionAddOn({
+    const subscriptionAddOn = new SubscriptionAddOnEntity({
       subscriptionId: subscription.id,
       addOnId: addOn.id,
       startDate: effectiveDate,
@@ -128,7 +128,7 @@ export class AddOnManagerService {
    */
   @Transactional({ connectionName: 'billing' })
   async removeAddOn(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     addOnId: string,
     options: {
       effectiveDate?: Date
@@ -186,16 +186,16 @@ export class AddOnManagerService {
    */
   @Transactional({ connectionName: 'billing' })
   async migrateAddOns(
-    oldAddOns: SubscriptionAddOn[],
+    oldAddOns: SubscriptionAddOnEntity[],
     newPlanAllowedAddOns: string[],
     effectiveDate: Date,
   ): Promise<{
-    kept: SubscriptionAddOn[]
-    removed: SubscriptionAddOn[]
+    kept: SubscriptionAddOnEntity[]
+    removed: SubscriptionAddOnEntity[]
     totalCredit: number
   }> {
-    const kept: SubscriptionAddOn[] = []
-    const removed: SubscriptionAddOn[] = []
+    const kept: SubscriptionAddOnEntity[] = []
+    const removed: SubscriptionAddOnEntity[] = []
     let totalCredit = new Decimal(0)
 
     for (const subscriptionAddOn of oldAddOns) {
@@ -248,7 +248,7 @@ export class AddOnManagerService {
    * @throws BadRequestException if incompatible
    */
   private async validateAddOnCompatibility(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     addOn: AddOn,
   ): Promise<void> {
     // Check if add-on has plan requirements
@@ -280,7 +280,7 @@ export class AddOnManagerService {
    * @returns Prorated charge amount
    */
   private async calculateAddOnAdditionCharge(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     addOn: AddOn,
     effectiveDate: Date,
   ): Promise<number> {

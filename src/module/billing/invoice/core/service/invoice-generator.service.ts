@@ -10,7 +10,7 @@ import {
 } from '@billingModule/invoice/core/interface/invoice-totals.interface'
 import { addDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 /**
  * INVOICE GENERATOR SERVICE
@@ -47,7 +47,7 @@ export class InvoiceGeneratorService {
    */
   @Transactional({ connectionName: 'billing' })
   async generateInvoice(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     lineItems: InvoiceLineItem[],
     options: {
       dueDate?: Date
@@ -105,7 +105,9 @@ export class InvoiceGeneratorService {
    * @param subscription - Subscription for invoice
    * @returns Unique invoice number
    */
-  async generateInvoiceNumber(subscription: Subscription): Promise<string> {
+  async generateInvoiceNumber(
+    subscription: SubscriptionEntity,
+  ): Promise<string> {
     const now = new Date()
     const yearMonth = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`
     const userPrefix = subscription.userId.substring(0, 8)

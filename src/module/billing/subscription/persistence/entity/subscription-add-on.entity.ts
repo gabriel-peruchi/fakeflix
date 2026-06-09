@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { DefaultEntity } from '@sharedModules/persistence/typeorm/entity/default.entity'
 import { AddOn } from '@billingModule/subscription/persistence/entity/add-on.entity'
-import { Subscription } from './subscription.entity'
+import { SubscriptionEntity } from './subscription.entity'
 
 @Entity({ name: 'BillingSubscriptionAddOn' })
-export class SubscriptionAddOn extends DefaultEntity<SubscriptionAddOn> {
+export class SubscriptionAddOnEntity extends DefaultEntity<SubscriptionAddOnEntity> {
   @Column()
   subscriptionId: string
 
@@ -20,9 +20,9 @@ export class SubscriptionAddOn extends DefaultEntity<SubscriptionAddOn> {
   @Column({ default: 1 })
   quantity: number
 
-  @ManyToOne(() => Subscription, (subscription) => subscription.addOns)
+  @ManyToOne(() => SubscriptionEntity, (subscription) => subscription.addOns)
   @JoinColumn({ name: 'subscriptionId' })
-  subscription: Subscription
+  subscription: SubscriptionEntity
 
   @ManyToOne(() => AddOn, (addOn) => addOn.subscriptionAddOns)
   @JoinColumn({ name: 'addOnId' })

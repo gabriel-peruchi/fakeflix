@@ -8,7 +8,7 @@ import {
   ProrationLineItem,
 } from '@billingModule/subscription/core/interface/proration-result.interface'
 import { PlanInterval } from '@billingModule/subscription/core/enum/plan-interval.enum'
-import { Subscription } from '@billingModule/subscription/persistence/entity/subscription.entity'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 /**
  * PRORATION CALCULATOR SERVICE
@@ -45,7 +45,7 @@ export class ProrationCalculatorService {
    * @returns Proration result with credit amount and breakdown
    */
   async calculateProrationCredit(
-    subscription: Subscription,
+    subscription: SubscriptionEntity,
     changeDate: Date,
     effectiveDate?: Date,
   ): Promise<ProrationResult> {
