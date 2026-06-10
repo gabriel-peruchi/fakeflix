@@ -58,6 +58,8 @@ import { TaxRateRepository } from '@billingModule/tax/persistence/repository/tax
 import { TaxCalculationErrorRepository } from '@billingModule/tax/persistence/repository/tax-calculation-error.repository'
 import { TaxCalculationSummaryRepository } from '@billingModule/tax/persistence/repository/tax-calculation-summary.repository'
 import { SubscriptionMapper } from './subscription/persistence/mapper/subscription.mapper'
+import { ChangePlanUseCase } from './subscription/core/use-case/change-plan'
+import { ProrationCalculatorDomainService } from './subscription/domain/service/proration-calculator.domain-service'
 
 @Module({
   imports: [
@@ -88,6 +90,12 @@ import { SubscriptionMapper } from './subscription/persistence/mapper/subscripti
     SubscriptionAddOnRepository,
     SubscriptionDiscountRepository,
     SubscriptionMapper,
+
+    // Domain Services
+    ProrationCalculatorDomainService,
+
+    // Use Cases
+    ChangePlanUseCase,
 
     // Invoice
     InvoiceService,
