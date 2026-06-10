@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { Transactional } from 'typeorm-transactional'
+import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 import { Invoice } from '@billingModule/invoice/persistence/entity/invoice.entity'
 import { InvoiceLineItem } from '@billingModule/invoice/persistence/entity/invoice-line-item.entity'
 import { InvoiceRepository } from '@billingModule/invoice/persistence/repository/invoice.repository'
+import { InvoiceLineItemRepository } from '@billingModule/invoice/persistence/repository/invoice-line-item.repository'
 import { InvoiceStatus } from '@billingModule/invoice/core/enum/invoice-status.enum'
 import {
   InvoiceTotals,
@@ -10,7 +12,6 @@ import {
 } from '@billingModule/invoice/core/interface/invoice-totals.interface'
 import { addDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
-import { SubscriptionEntity } from '@billingModule/subscription/persistence/entity/subscription.entity'
 
 /**
  * INVOICE GENERATOR SERVICE
@@ -35,7 +36,10 @@ import { SubscriptionEntity } from '@billingModule/subscription/persistence/enti
  */
 @Injectable()
 export class InvoiceGeneratorService {
-  constructor(private readonly invoiceRepository: InvoiceRepository) {}
+  constructor(
+    private readonly invoiceRepository: InvoiceRepository,
+    private readonly invoiceLineItemRepository: InvoiceLineItemRepository,
+  ) {}
 
   /**
    * Generate invoice from line items
@@ -86,12 +90,15 @@ export class InvoiceGeneratorService {
     // Save invoice
     const savedInvoice = await this.invoiceRepository.save(invoice)
 
-    // Associate line items with invoice
+    // Associate line items with invoice and save them
+    const savedLineItems: InvoiceLineItem[] = []
     for (const lineItem of lineItems) {
       lineItem.invoiceId = savedInvoice.id
+      const savedLineItem = await this.invoiceLineItemRepository.save(lineItem)
+      savedLineItems.push(savedLineItem)
     }
 
-    savedInvoice.invoiceLines = lineItems
+    savedInvoice.invoiceLines = savedLineItems
 
     return savedInvoice
   }

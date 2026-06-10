@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common'
 import { ClsModule } from 'nestjs-cls'
+import { ScheduleModule } from '@nestjs/schedule'
 import { AuthModule } from '@sharedModules/auth/auth.module'
+import { ConfigModule } from '@sharedModules/config/config.module'
 import { LoggerModule } from '@sharedModules/logger/logger.module'
 
 // Shared infrastructure (only persistence module - NOT a feature module)
-import { BillingPersistenceModule } from './shared/persistence/billing-persistence.module'
+import { BillingPersistenceModule } from '@billingModule/shared/persistence/billing-persistence.module'
 import { PaymentGatewayClient } from '@billingModule/invoice/http/client/payment-gateway-api/payment-gateway.client'
 import { AccountingIntegrationClient } from '@billingModule/invoice/http/client/accounting-api/accounting-integration.client'
 
@@ -21,8 +23,11 @@ import { AddOnRepository } from '@billingModule/subscription/persistence/reposit
 import { SubscriptionRepository } from '@billingModule/subscription/persistence/repository/subscription.repository'
 import { SubscriptionAddOnRepository } from '@billingModule/subscription/persistence/repository/subscription-add-on.repository'
 import { SubscriptionDiscountRepository } from '@billingModule/subscription/persistence/repository/subscription-discount.repository'
+import { SubscriptionMapper } from '@billingModule/subscription/persistence/mapper/subscription.mapper'
 import { SubscriptionController } from '@billingModule/subscription/http/rest/controller/subscription.controller'
 import { SubscriptionBillingController } from '@billingModule/subscription/http/rest/controller/subscription-billing.controller'
+import { ChangePlanUseCase } from '@billingModule/subscription/core/use-case/change-plan'
+import { ProrationCalculatorDomainService } from '@billingModule/subscription/domain/service/proration-calculator.domain-service'
 
 // Invoice feature
 import { InvoiceService } from '@billingModule/invoice/core/service/invoice.service'
@@ -57,16 +62,28 @@ import { EasyTaxClient } from '@billingModule/tax/http/client/easytax-api/easyta
 import { TaxRateRepository } from '@billingModule/tax/persistence/repository/tax-rate.repository'
 import { TaxCalculationErrorRepository } from '@billingModule/tax/persistence/repository/tax-calculation-error.repository'
 import { TaxCalculationSummaryRepository } from '@billingModule/tax/persistence/repository/tax-calculation-summary.repository'
-import { SubscriptionMapper } from './subscription/persistence/mapper/subscription.mapper'
-import { ChangePlanUseCase } from './subscription/core/use-case/change-plan'
-import { ProrationCalculatorDomainService } from './subscription/domain/service/proration-calculator.domain-service'
+
+// Outbox & Event Bus
+import { NoopEventBusAdapter } from '@billingModule/shared/outbox/adapter/noop-event-bus.adapter'
+import { OutboxProcessorService } from '@billingModule/shared/outbox/processor/outbox-processor.service'
+import { EventDispatcherService } from '@billingModule/shared/outbox/adapter/event-dispatcher.service'
+import { EVENT_BUS_ADAPTER } from '@billingModule/shared/outbox/adapter/event-bus.adapter.interface'
+
+// Event Handlers
+import { OnPlanChangedGenerateInvoiceHandler } from '@billingModule/invoice/core/event-handler/on-plan-changed-generate-invoice.handler'
+import { OnPlanChangedIssueCreditHandler } from '@billingModule/credit/core/event-handler/on-plan-changed-issue-credit.handler'
+
+// Feature Flags
+import { BillingFeatureFlags } from '@billingModule/shared/config/feature-flags'
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     ClsModule.forRoot({
       global: true,
       middleware: { mount: true },
     }),
+    ScheduleModule.forRoot(),
     BillingPersistenceModule,
     AuthModule,
     LoggerModule,
@@ -127,6 +144,23 @@ import { ProrationCalculatorDomainService } from './subscription/domain/service/
     TaxRateRepository,
     TaxCalculationErrorRepository,
     TaxCalculationSummaryRepository,
+
+    // Event Bus (stub por enquanto)
+    {
+      provide: EVENT_BUS_ADAPTER,
+      useClass: NoopEventBusAdapter,
+    },
+
+    // Outbox Processor
+    OutboxProcessorService,
+
+    // Event Handlers
+    OnPlanChangedGenerateInvoiceHandler,
+    OnPlanChangedIssueCreditHandler,
+    EventDispatcherService,
+
+    // Feature Flags
+    BillingFeatureFlags,
   ],
   controllers: [
     SubscriptionController,
@@ -135,6 +169,6 @@ import { ProrationCalculatorDomainService } from './subscription/domain/service/
     CreditController,
     UsageController,
   ],
-  exports: [BillingPublicApiProvider],
+  exports: [BillingPublicApiProvider, BillingFeatureFlags],
 })
 export class BillingModule {}
